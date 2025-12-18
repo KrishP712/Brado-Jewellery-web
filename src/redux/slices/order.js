@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../api/AxiosInterceptor';
 import { toast } from 'react-toastify';
 import { Flip } from 'react-toastify';
-const API_URL = "http://localhost:4000/admin/order"
+const API_URL = "order"
 export const createOrder = createAsyncThunk(
   '/createOrder',
   async (orderData, { rejectWithValue }) => {

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../api/AxiosInterceptor';
 
-const API_URL = "http://localhost:4000/admin/coupon";
+const API_URL = "coupon";
 export const getCouponData = createAsyncThunk(
   '/fetchCouponData',
   async (_, { rejectWithValue }) => {

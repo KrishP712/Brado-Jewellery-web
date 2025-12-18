@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../api/AxiosInterceptor';
 
-const API_URL = "http://localhost:4000/admin/testimonial";
+const API_URL = "testimonial";
 // Async thunk to fetch carousel data
 export const getTestimonial = createAsyncThunk(
     'testimonial/getTestimonial',

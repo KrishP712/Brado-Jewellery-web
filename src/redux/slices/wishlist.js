@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../../api/AxiosInterceptor";
 import { Flip, toast } from "react-toastify";
 
-const API_URL = "http://localhost:4000/admin/wishlist";
+const API_URL = "wishlist";
 
 const initialState = {
   loading: false,

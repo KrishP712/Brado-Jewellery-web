@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../api/AxiosInterceptor';
 import { Flip, toast } from 'react-toastify';
 
-const API_URL = "http://localhost:4000/admin/cart";
+const API_URL = "cart";
 
 export const getCartData = createAsyncThunk(
     'cart/fetchCartData',
