@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: 'PlusJakartaSans';
+    src: url('./assets/fonts/static/PlusJakartaSans-Regular.ttf');
+}
+.section-title {
+    position: relative;
+    color: #333;
+}
+
+.section-title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -13px;
+    height: 2.5px;
+    width: 65px;
+    border-radius: 2px;
+    background-color: #b5853b;
+    /* gold-ish color */
+}
+
+
+.section-title::after {
+    content: "";
+    position: absolute;
+    left: 72px;
+
+    bottom: -13px;
+    height: 2.5px;
+    width: 20px;
+    border-radius: 2px;
+    background-color: #b5853b;
+    /* gold-ish color */
+}
+
+.swiper-button-prev-custom,
+.swiper-button-next-custom {
+    background-color: transparent;
+}
+
+
+:root {
+    --color-icon: #000;
+    --font-body: "PlusJakartaSans", sans-serif;
+
+}
+
+body {
+    font-family: var(--font-body), sans-serif;
+    font-weight: 400;
+    
+}
+
+.icon {
+    font-size: 1.325rem;
+    color: #000000;
+}
+
