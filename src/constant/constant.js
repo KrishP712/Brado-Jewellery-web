@@ -314,16 +314,16 @@ export const deal = [
     { img: dealImg10, title: "Traditional South Indian Haram", price: 1199, original: 2399, discount: 50 },
 ];
 
-import judaImg1 from "../assets/images/juda/img1.jpeg";
-import judaImg2 from "../assets/images/juda/img2.jpeg";
-import judaImg3 from "../assets/images/juda/img3.jpeg";
-import judaImg4 from "../assets/images/juda/img4.jpeg";
-import judaImg5 from "../assets/images/juda/img5.jpeg";
-import judaImg6 from "../assets/images/juda/img6.jpeg";
-import judaImg7 from "../assets/images/juda/img7.jpeg";
-import judaImg8 from "../assets/images/juda/img8.jpeg";
-import judaImg9 from "../assets/images/juda/img9.jpeg";
-import judaImg10 from "../assets/images/juda/img10.jpeg";
+import judaImg1 from "../assets/images/Juda/img1.jpeg";
+import judaImg2 from "../assets/images/Juda/img2.jpeg";
+import judaImg3 from "../assets/images/Juda/img3.jpeg";
+import judaImg4 from "../assets/images/Juda/img4.jpeg";
+import judaImg5 from "../assets/images/Juda/img5.jpeg";
+import judaImg6 from "../assets/images/Juda/img6.jpeg";
+import judaImg7 from "../assets/images/Juda/img7.jpeg";
+import judaImg8 from "../assets/images/Juda/img8.jpeg";
+import judaImg9 from "../assets/images/Juda/img9.jpeg";
+import judaImg10 from "../assets/images/Juda/img10.jpeg";
 
 export const judas = [
     { img: judaImg1, title: "Elegant Juda Hair Accessory", price: 299 },
