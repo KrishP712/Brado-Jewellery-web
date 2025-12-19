@@ -71,7 +71,7 @@ const AllProductCard = ({ product }) => {
     return (
         <div className="bg-white overflow-hidden relative group hover:transition duration-300">
             <div className="relative cursor-pointer" >
-                <img
+                <
                     onClick={() => handleProductClick(product.slug)}
                     src={product.imagesUrl[0]}
                     alt={product.title}

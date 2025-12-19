@@ -15,7 +15,7 @@ export const getProductsById = createAsyncThunk(
   "products/getProductsById",
   async (slug, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/admin/products/allbyid/${slug}`);
+      const response = await axiosInstance.get(`/products/allbyid/${slug}`);
       return response?.product;
     } catch (error) {
       console.log(error)
@@ -28,7 +28,7 @@ export const getAllProducts = createAsyncThunk(
   "products/getAllProducts",
   async (query, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/admin/products/all", {
+      const response = await axiosInstance.get("/products/all", {
         params: query,
       });
       return response?.data || {};
@@ -42,7 +42,7 @@ export const searchProducts = createAsyncThunk(
   "products/searchProducts",
   async (query, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/admin/products/search", {
+      const response = await axiosInstance.get("/products/search", {
         params: { query }
       });
       return response.products;
