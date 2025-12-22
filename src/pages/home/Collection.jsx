@@ -26,7 +26,6 @@ const Collection = () => {
         setCanSlidePrev(!swiper.isBeginning);
         setCanSlideNext(!swiper.isEnd);
 
-        // 🔑 force Swiper to refresh navigation buttons
         if (swiper.navigation) {
             swiper.navigation.update();
         }
