@@ -54,10 +54,8 @@ export const otpVerify = createAsyncThunk(
         _id: payload.id,
         otp: payload.otp,
       });
-
       if (response.success && response.token) {
         localStorage.setItem("usertoken", response.token);
-        localStorage.setItem("user", JSON.stringify(response.user));
       }
 
       toast.success(response?.message || "Verified", {
