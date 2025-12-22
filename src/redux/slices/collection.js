@@ -9,6 +9,7 @@ export const getCollection = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(`${API_URL}/all`);
+            console.log(response);
             return response.data;
 
         } catch (error) {
