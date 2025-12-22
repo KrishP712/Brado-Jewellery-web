@@ -5,7 +5,7 @@ import { Flip, toast, Bounce } from "react-toastify";
 /* ---------------- SAFE HELPERS ---------------- */
 const getStoredUser = () => {
   try {
-    const user = localStorage.getItem("user");
+    const user = localStorage.getItem("usertoken");
     if (!user || user === "undefined") return null;
     return JSON.parse(user);
   } catch {
