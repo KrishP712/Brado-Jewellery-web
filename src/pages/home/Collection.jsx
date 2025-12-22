@@ -15,6 +15,7 @@ const Collection = () => {
     const [canSlideNext, setCanSlideNext] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const collections = useSelector((state) => state.collection.collections);
+    console.log(collections);
     const swiperRef = useRef(null);
     const navigate = useNavigate();
     const dispatch = useDispatch();
