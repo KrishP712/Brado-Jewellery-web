@@ -13,7 +13,7 @@ export const signInUser = createAsyncThunk(
     'auth/signInUser',
     async (payload, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post('/auth/user/login', payload);
+            const response = await axiosInstance.post('/user/login', payload);
             toast.success(response?.message, {
                 position: 'bottom-right',
                 autoClose: 3000,
@@ -42,7 +42,7 @@ export const otpVerify = createAsyncThunk(
     'auth/otpVerify',
     async (payload, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post('/auth/user/verifyotp', { _id: payload.id, otp: payload.otp }, { withCredentials: true });
+            const response = await axiosInstance.post('/user/verifyotp', { _id: payload.id, otp: payload.otp }, { withCredentials: true });
             toast.success(response?.message || 'Verified', {
                 position: 'bottom-right',
                 autoClose: 3000,
@@ -71,7 +71,7 @@ export const resendOTP = createAsyncThunk(
     async (payload, { rejectWithValue }) => {
         try {
 
-            const response = await axiosInstance.post('/auth/resend-otp', { id: payload.id, otp: payload.otp });
+            const response = await axiosInstance.post('/user/resend-otp', { id: payload.id, otp: payload.otp });
             toast.success(response?.message || 'Resend OTP', {
                 position: 'bottom-right',
                 autoClose: 3000,
@@ -98,7 +98,7 @@ export const logout = createAsyncThunk(
     'auth/logout',
     async (payload, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post('/auth/user/logout', payload, { withCredentials: true });
+            const response = await axiosInstance.post('/user/logout', payload, { withCredentials: true });
             toast.success(response?.message || 'Logged out', {
                 position: 'bottom-right',
                 autoClose: 3000,
@@ -121,7 +121,7 @@ export const updateuserprofile = createAsyncThunk(
     'auth/updateuserprofile',
     async (payload, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post('/auth/user/update', payload, { withCredentials: true });
+            const response = await axiosInstance.post('/user/update', payload, { withCredentials: true });
             toast.success(response?.message || 'Profile updated successfully', {
                 position: 'bottom-right',
                 autoClose: 3000,
@@ -146,7 +146,7 @@ export const getUser = createAsyncThunk(
     'auth/user',
     async (payload, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get('/auth/user/all', { withCredentials: true });
+            const response = await axiosInstance.get('/user/all', { withCredentials: true });
             return response;
         } catch (error) {
             console.log(error);
