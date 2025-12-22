@@ -4,11 +4,11 @@ import { Flip, toast, Bounce } from 'react-toastify';
 
 const initialState = {
     loading: false,
-    user: null,
+    user: JSON.parse(localStorage.getItem("user")) || null,
+    isAuthenticated: !!localStorage.getItem("usertoken"),
     error: null,
     id: null
 };
-
 export const signInUser = createAsyncThunk(
     'auth/signInUser',
     async (payload, { rejectWithValue }) => {
@@ -42,7 +42,12 @@ export const otpVerify = createAsyncThunk(
     'auth/otpVerify',
     async (payload, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post('/user/verifyotp', { _id: payload.id, otp: payload.otp }, { withCredentials: true });
+            const response = await axiosInstance.post('/user/verifyotp', { _id: payload.id, otp: payload.otp }, { withCredentials: true })
+            if (response.success && response.token) {
+                localStorage.setItem('usertoken', response.token);
+                localStorage.setItem('user', JSON.stringify(response.user));
+            }
+
             toast.success(response?.message || 'Verified', {
                 position: 'bottom-right',
                 autoClose: 3000,
@@ -158,7 +163,14 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     users: [],
-    reducers: {},
+    reducers: {
+        clearAuth: (state) => {
+            localStorage.removeItem("usertoken");
+            localStorage.removeItem("user");
+            state.user = null;
+            state.isAuthenticated = false;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(signInUser.pending, (state) => {
@@ -180,8 +192,8 @@ const authSlice = createSlice({
             })
             .addCase(getUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.users = action.payload.users;  
-                state.id = action.payload.id;       
+                state.users = action.payload.users;
+                state.id = action.payload.id;
                 state.user = state.users.find(u => u._id === state.id) || null;
             })
             .addCase(getUser.pending, (state) => {
@@ -190,8 +202,17 @@ const authSlice = createSlice({
             .addCase(getUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(otpVerify.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload.user;
+                state.isAuthenticated = true;
+            })
+            .addCase(otpVerify.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     }
 });
-
+export const {clearAuth()}
 export default authSlice.reducer;

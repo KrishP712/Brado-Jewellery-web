@@ -27,7 +27,7 @@ function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const token = Cookies.get("usertoken");
+  const token = localStorage.getItem("usertoken");
   console.log(token);
   const user = useSelector((state) => state?.auth?.user);
 
