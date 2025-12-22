@@ -28,7 +28,6 @@ function Header() {
   const dispatch = useDispatch();
 
   const token = localStorage.getItem("usertoken");
-  console.log(token);
   const user = useSelector((state) => state?.auth?.user);
 
   const userlogout = () => {
