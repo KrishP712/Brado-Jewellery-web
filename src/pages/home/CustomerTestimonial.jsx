@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import StarRating from "../../assets/icons/StarRating";
+import StarRating from "../../assets/icons/StarRatingcompo";
 import logo from "../../assets/images/testimonial.jpg";
 import { useSelector, useDispatch } from "react-redux";
 import { getTestimonial } from "../../redux/slices/testimonial";

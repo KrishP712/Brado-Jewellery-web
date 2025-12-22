@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../api/AxiosInterceptor';
 import { Flip, toast } from 'react-toastify';
-const API_URL = "http://localhost:4000/admin/address";
+const API_URL = "address";
 export const getAddressData = createAsyncThunk(
   'address/get',
   async (_, { rejectWithValue }) => {

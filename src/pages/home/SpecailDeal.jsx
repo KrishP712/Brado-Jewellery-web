@@ -8,7 +8,7 @@ import "swiper/css/navigation";
 import Discount from "../../assets/icons/Discount";
 import CheckBadgeIcon from "../../assets/icons/CheckBadgeIcon";
 import ArrowRightIcon from "../../assets/icons/ArrowRightIcon";
-import StarRating from "../../assets/icons/StarRating";
+import StarRating from "../../assets/icons/StarRatingcompo";
 import ArrowDownIcon from "../../assets/icons/ArrowDownIcon";
 import RightArrowIcon from "../../assets/icons/Rightarrow";
 import LeftArrowIcon from "../../assets/icons/Leftarrow";

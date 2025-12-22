@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../api/AxiosInterceptor';
 import { Flip, toast } from 'react-toastify';
 
-const API_URL = "http://localhost:4000/admin/review";
+const API_URL = "review";
 
 export const getReviewData = createAsyncThunk(
     'review/get',

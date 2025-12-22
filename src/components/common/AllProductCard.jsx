@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Cart from "../../assets/icons/Cart";
-import StarRating from '../../assets/icons/StarRating';
+import StarRating from '../../assets/icons/StarRatingcompo';
 import CheckBadgeIcon from "../../assets/icons/CheckBadgeIcon";
 import { addToWishlist, removeFromWishlist } from '../../redux/slices/wishlist';
 import { BadgePercent, Heart } from 'lucide-react';

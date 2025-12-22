@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import logo from '../../../assets/images/logo.png'
 import FacebookIcon from '../../../assets/icons/FacebookIcon';
 import InstagramIcon from '../../../assets/icons/InstagramIcon';
-import YouTubeIcon from '../../../assets/icons/YoutubeIcon';
+import YouTubeIcon from '../../../assets/icons/YouTubeIcon';
 import PhoneIcon from '../../../assets/icons/PhoneIcon';
 import MailIcon from '../../../assets/icons/MailIcon';
 import LocationIcon from '../../../assets/icons/LocationIcon';
