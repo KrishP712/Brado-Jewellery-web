@@ -101,9 +101,9 @@ export const resendOTP = createAsyncThunk(
 
 export const logout = createAsyncThunk(
     'auth/logout',
-    async (payload, { rejectWithValue }) => {
+    async (dispatch, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post('/user/logout', payload, { withCredentials: true });
+            dispatch(clearAuth())
             toast.success(response?.message || 'Logged out', {
                 position: 'bottom-right',
                 autoClose: 3000,
@@ -214,5 +214,5 @@ const authSlice = createSlice({
             });
     }
 });
-export const {clearAuth()}
+export const { clearAuth } = authSlice.actions
 export default authSlice.reducer;
