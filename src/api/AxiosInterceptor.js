@@ -12,8 +12,8 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // const accessToken = Cookies.get('accessToken');
-    const accessToken = localStorage.getItem('userToken');
-    
+    const accessToken = JSON.parse(localStorage.getItem('usertoken'));
+
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
@@ -23,7 +23,7 @@ axiosInstance.interceptors.request.use(
   (error) => {
     return Promise.reject(error);
   }
-);  
+);
 
 axiosInstance.interceptors.response.use(
   (response) => response.data,
