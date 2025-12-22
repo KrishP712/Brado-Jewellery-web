@@ -28,6 +28,7 @@ function Header() {
   const dispatch = useDispatch();
 
   const token = Cookies.get("usertoken");
+  console.log(token);
   const user = useSelector((state) => state?.auth?.user);
 
   const userlogout = () => {
