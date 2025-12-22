@@ -81,6 +81,7 @@ const Collection = () => {
                             className="collections-swiper"
                         >
                             {collections.map((item, index) => (
+                                console.log(item),
                                 <SwiperSlide
                                     key={index}
                                     className="flex flex-col items-center group"
