@@ -3,7 +3,6 @@ import axios from 'axios';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -13,8 +12,8 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // const accessToken = Cookies.get('accessToken');
-    const accessToken = true;
-    
+    const accessToken = localStorage.getItem('usertoken');
+
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
@@ -24,7 +23,7 @@ axiosInstance.interceptors.request.use(
   (error) => {
     return Promise.reject(error);
   }
-);  
+);
 
 axiosInstance.interceptors.response.use(
   (response) => response.data,

@@ -27,8 +27,7 @@ function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const token = Cookies.get("usertoken");
-
+  const token = localStorage.getItem("usertoken");
   const user = useSelector((state) => state?.auth?.user);
 
   const userlogout = () => {
@@ -325,9 +324,9 @@ function Header() {
                 <button
                   onClick={() => {
                     if (token) {
-                      userlogout();        // logout user
+                      userlogout();        
                     } else {
-                      openSignInModal();   // open login modal
+                      openSignInModal();   
                     }
                     setIsMenuOpen(false);
                   }}
