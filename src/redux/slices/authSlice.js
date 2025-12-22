@@ -4,7 +4,7 @@ import { Flip, toast, Bounce } from 'react-toastify';
 
 const initialState = {
     loading: false,
-    user: JSON.parse(localStorage.getItem("user")) || null,
+    user: JSON.parse(localStorage.getItem("userToken")) || null,
     isAuthenticated: !!localStorage.getItem("usertoken"),
     error: null,
     id: null
