@@ -50,24 +50,16 @@ export const createCartData = createAsyncThunk(
 );
 
 export const increaseCartQuantity = createAsyncThunk(
-    'cart/increaseQuantity',
-    async (productId, { rejectWithValue, dispatch }) => {
-        try {
-            const response = await axiosInstance.put(`${API_URL}/increase`, { productId });
-
-            return { productId };
-        } catch (error) {
-            toast.error(error?.response?.message || 'Error increasing quantity', {
-                position: 'bottom-right',
-                autoClose: 3000,
-                style: { fontSize: '12px' },
-                pauseOnHover: true,
-                transition: Flip,
-            });
-            return rejectWithValue(error.response);
-        }
+    "cart/increaseQuantity",
+    async (productId, { rejectWithValue }) => {
+      try {
+        const response = await axiosInstance.put(`/cart/increase`, { productId });
+        return { productId };
+      } catch (error) {
+        return rejectWithValue(error.response);
+      }
     }
-);
+  );
 
 export const decreaseCartQuantity = createAsyncThunk(
     'cart/decreaseQuantity',
