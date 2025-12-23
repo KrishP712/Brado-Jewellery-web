@@ -65,7 +65,7 @@ export const decreaseCartQuantity = createAsyncThunk(
     'cart/decreaseQuantity',
     async (productId, { rejectWithValue, dispatch }) => {
         try {
-            const response = await axiosInstance.put(`${API_URL}/decrease`, { productId });
+            const response = await axiosInstance.put(`cart/decrease`, { productId });
             return {productId};
         } catch (error) {
             toast.error(error?.response?.message || 'Error decreasing quantity', {
