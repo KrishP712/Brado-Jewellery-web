@@ -161,19 +161,20 @@ const cartSlice = createSlice({
                 state.operationStatus = 'loading';
             })
             .addCase(increaseCartQuantity.fulfilled, (state, action) => {
-                state.operationStatus = 'succeeded';
+                state.operationStatus = "succeeded";
               
                 if (!state.cart?.length) return;
               
                 const products = state.cart[0].products;
               
                 const item = products.find(
-                  (p) => p.productId === action.payload.productId
+                  (p) => String(p.productId) === String(action.payload.productId)
                 );
+              
                 if (item) {
-                  item.quantity += 1; 
+                  item.quantity += 1; // ✅ UI updates instantly
                 }
-              })
+              });
               
             .addCase(increaseCartQuantity.rejected, (state, action) => {
                 state.operationStatus = 'failed';
