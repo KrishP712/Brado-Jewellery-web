@@ -443,7 +443,6 @@ const BuyNow = () => {
           </h2>
 
           {products.map((item) => (
-            console.log(item),
             <div
               key={item.productId || item._id}
               className="border-b border-gray-300 pb-[15px] mb-4 relative"
