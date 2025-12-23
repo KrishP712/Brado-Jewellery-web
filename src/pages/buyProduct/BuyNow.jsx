@@ -443,7 +443,6 @@ const BuyNow = () => {
           </h2>
 
           {products.map((item) => (
-            console.log("qty:", item.quantity, "stock:", item.stock),
             <div
               key={item.productId || item._id}
               className="border-b border-gray-300 pb-[15px] mb-4 relative"
@@ -520,8 +519,9 @@ const BuyNow = () => {
                   <div className="flex items-center gap-3">
                     <div className="flex border border-gray-200 p-[2px] rounded">
                       <button
+                        type='button'
                         onClick={() => handleDecreaseQuantity(item.productId)}
-                        disabled={ item.quantity <= 1
+                        disabled={item.quantity <= 1
                         }
                         className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"
                       >
@@ -531,6 +531,7 @@ const BuyNow = () => {
                         {item.quantity}
                       </span>
                       <button
+                      type='button'
                         onClick={() => handleIncreaseQuantity(item.productId)}
                         disabled={
                           item.quantity >= item.stock
