@@ -180,9 +180,6 @@ const cartSlice = createSlice({
         .addCase(decreaseCartQuantity.pending, (state) => {
             state.operationStatus = 'loading';
         })
-        .addCase(decreaseCartQuantity.fulfilled, (state) => {
-            state.operationStatus = 'succeeded';
-        })
         .addCase(increaseCartQuantity.fulfilled, (state, action) => {
             state.operationStatus = "succeeded";
           
@@ -195,10 +192,14 @@ const cartSlice = createSlice({
             );
           
             if (item) {
-              item.quantity -= 1;
+              item.quantity -= 1; 
             }
           })
           
+        .addCase(decreaseCartQuantity.rejected, (state, action) => {
+            state.operationStatus = 'failed';
+            state.error = action.payload;
+        })
 
         .addCase(removeCartData.pending, (state) => {
             state.operationStatus = 'loading';
