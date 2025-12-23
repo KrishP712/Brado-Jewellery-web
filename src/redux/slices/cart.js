@@ -66,11 +66,7 @@ export const decreaseCartQuantity = createAsyncThunk(
     async (productId, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.put(`${API_URL}/decrease`, { productId });
-
-            if (response?.success) {
-                dispatch(getCartData());
-            }
-            return response;
+            return {productId};
         } catch (error) {
             toast.error(error?.response?.message || 'Error decreasing quantity', {
                 position: 'bottom-right',
@@ -172,7 +168,7 @@ const cartSlice = createSlice({
                 );
               
                 if (item) {
-                  item.quantity += 1; // ✅ UI updates instantly
+                  item.quantity += 1; 
                 }
               })
               
@@ -187,10 +183,22 @@ const cartSlice = createSlice({
         .addCase(decreaseCartQuantity.fulfilled, (state) => {
             state.operationStatus = 'succeeded';
         })
-        .addCase(decreaseCartQuantity.rejected, (state, action) => {
-            state.operationStatus = 'failed';
-            state.error = action.payload;
-        })
+        .addCase(increaseCartQuantity.fulfilled, (state, action) => {
+            state.operationStatus = "succeeded";
+          
+            if (!state.cart?.length) return;
+          
+            const products = state.cart[0].products;
+          
+            const item = products.find(
+              (p) => String(p.productId) === String(action.payload.productId)
+            );
+          
+            if (item) {
+              item.quantity -= 1;
+            }
+          })
+          
 
         .addCase(removeCartData.pending, (state) => {
             state.operationStatus = 'loading';
