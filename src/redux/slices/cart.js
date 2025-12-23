@@ -169,7 +169,7 @@ const cartSlice = createSlice({
                 state.operationStatus = 'loading';
             })
             .addCase(increaseCartQuantity.fulfilled, (state, action) => {
-                const item = state.cart.products.find(
+                const item = state.cart.products?.find(
                     (p) => p.productId === action.payload.productId
                 );
 
