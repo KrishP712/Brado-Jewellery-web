@@ -53,33 +53,25 @@ export const increaseCartQuantity = createAsyncThunk(
     "cart/increaseQuantity",
     async (productId, { rejectWithValue }) => {
       try {
-        const response = await axiosInstance.put(`/cart/increase`, { productId });
+        await axiosInstance.put(`/cart/increase`, { productId });
         return { productId };
       } catch (error) {
         return rejectWithValue(error.response);
       }
     }
   );
-
-export const decreaseCartQuantity = createAsyncThunk(
-    'cart/decreaseQuantity',
-    async (productId, { rejectWithValue, dispatch }) => {
-        try {
-            const response = await axiosInstance.put(`cart/decrease`, { productId });
-            return {productId};
-        } catch (error) {
-            toast.error(error?.response?.message || 'Error decreasing quantity', {
-                position: 'bottom-right',
-                autoClose: 3000,
-                style: { fontSize: '12px' },
-                pauseOnHover: true,
-                transition: Flip,
-            });
-            return rejectWithValue(error.response);
-        }
+  
+  export const decreaseCartQuantity = createAsyncThunk(
+    "cart/decreaseQuantity",
+    async (productId, { rejectWithValue }) => {
+      try {
+        await axiosInstance.put(`/cart/decrease`, { productId });
+        return { productId };
+      } catch (error) {
+        return rejectWithValue(error.response);
+      }
     }
-);
-
+  );
 export const removeCartData = createAsyncThunk(
     'cart/removeCartData',
     async (productId, { rejectWithValue, dispatch }) => {
@@ -180,19 +172,17 @@ const cartSlice = createSlice({
         .addCase(decreaseCartQuantity.pending, (state) => {
             state.operationStatus = 'loading';
         })
-        .addCase(increaseCartQuantity.fulfilled, (state, action) => {
+        .addCase(decreaseCartQuantity.fulfilled, (state, action) => {
             state.operationStatus = "succeeded";
-          
+    
             if (!state.cart?.length) return;
-          
-            const products = state.cart[0].products;
-          
-            const item = products.find(
+    
+            const item = state.cart[0].products.find(
               (p) => String(p.productId) === String(action.payload.productId)
             );
-          
-            if (item) {
-              item.quantity -= 1; 
+    
+            if (item && item.quantity > 1) {
+              item.quantity -= 1;
             }
           })
           
