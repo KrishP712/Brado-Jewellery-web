@@ -54,10 +54,8 @@ export const increaseCartQuantity = createAsyncThunk(
     async (productId, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.put(`${API_URL}/increase`, { productId });
-            if (response?.success) {
-                dispatch(getCartData());
-            }
-            return response;
+
+            return { productId };
         } catch (error) {
             toast.error(error?.response?.message || 'Error increasing quantity', {
                 position: 'bottom-right',
@@ -130,7 +128,7 @@ const cartSlice = createSlice({
         cart: [],
         status: 'idle',
         error: null,
-        operationStatus: 'idle', 
+        operationStatus: 'idle',
     },
     reducers: {
         clearCart: (state) => {
@@ -170,36 +168,42 @@ const cartSlice = createSlice({
             .addCase(increaseCartQuantity.pending, (state) => {
                 state.operationStatus = 'loading';
             })
-            .addCase(increaseCartQuantity.fulfilled, (state) => {
-                state.operationStatus = 'succeeded';
+            .addCase(increaseCartQuantity.fulfilled, (state, action) => {
+                const item = state.cart.products.find(
+                    (p) => p.productId === action.payload.productId
+                );
+
+                if (item) {
+                    item.quantity += 1; 
+                }
             })
             .addCase(increaseCartQuantity.rejected, (state, action) => {
                 state.operationStatus = 'failed';
                 state.error = action.payload;
             })
 
-            .addCase(decreaseCartQuantity.pending, (state) => {
-                state.operationStatus = 'loading';
-            })
-            .addCase(decreaseCartQuantity.fulfilled, (state) => {
-                state.operationStatus = 'succeeded';
-            })
-            .addCase(decreaseCartQuantity.rejected, (state, action) => {
-                state.operationStatus = 'failed';
-                state.error = action.payload;
-            })
+        .addCase(decreaseCartQuantity.pending, (state) => {
+            state.operationStatus = 'loading';
+        })
+        .addCase(decreaseCartQuantity.fulfilled, (state) => {
+            state.operationStatus = 'succeeded';
+        })
+        .addCase(decreaseCartQuantity.rejected, (state, action) => {
+            state.operationStatus = 'failed';
+            state.error = action.payload;
+        })
 
-            .addCase(removeCartData.pending, (state) => {
-                state.operationStatus = 'loading';
-            })
-            .addCase(removeCartData.fulfilled, (state) => {
-                state.operationStatus = 'succeeded';
-            })
-            .addCase(removeCartData.rejected, (state, action) => {
-                state.operationStatus = 'failed';
-                state.error = action.payload;
-            });
-    },
+        .addCase(removeCartData.pending, (state) => {
+            state.operationStatus = 'loading';
+        })
+        .addCase(removeCartData.fulfilled, (state) => {
+            state.operationStatus = 'succeeded';
+        })
+        .addCase(removeCartData.rejected, (state, action) => {
+            state.operationStatus = 'failed';
+            state.error = action.payload;
+        });
+},
 });
 
 export const { clearCart, resetOperationStatus } = cartSlice.actions;
