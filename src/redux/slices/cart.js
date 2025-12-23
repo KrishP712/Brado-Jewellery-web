@@ -149,19 +149,10 @@ const cartSlice = createSlice({
                 state.operationStatus = 'loading';
             })
             .addCase(increaseCartQuantity.fulfilled, (state, action) => {
-                state.operationStatus = "succeeded";
-
-                if (!state.cart?.length) return;
-
-                const products = state.cart[0].products;
-
-                const item = products.find(
+                const item = state.cart[0].products.find(
                     (p) => String(p.productId) === String(action.payload.productId)
                 );
-
-                if (item) {
-                    item.quantity += 1;
-                }
+                if (item) item.quantity += 1;
             })
 
             .addCase(increaseCartQuantity.rejected, (state, action) => {
@@ -173,19 +164,11 @@ const cartSlice = createSlice({
                 state.operationStatus = 'loading';
             })
             .addCase(decreaseCartQuantity.fulfilled, (state, action) => {
-                state.operationStatus = "succeeded";
-
-                if (!state.cart?.length) return;
-
                 const item = state.cart[0].products.find(
                     (p) => String(p.productId) === String(action.payload.productId)
                 );
-
-                if (item && item.quantity > 1) {
-                    item.quantity -= 1;
-                }
+                if (item) item.quantity -= 1;
             })
-
             .addCase(decreaseCartQuantity.rejected, (state, action) => {
                 state.operationStatus = 'failed';
                 state.error = action.payload;
