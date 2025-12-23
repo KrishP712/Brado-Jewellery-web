@@ -99,28 +99,27 @@ export const resendOTP = createAsyncThunk(
 );
 
 export const logout = createAsyncThunk(
-    'auth/logout',
-    async (dispatch, { rejectWithValue }) => {
-        try {
-            dispatch(clearAuth())
-            toast.success(response?.message || 'Logged out', {
-                position: 'bottom-right',
-                autoClose: 3000,
-                pauseOnHover: true,
-                transition: Bounce,
-            });
-            return response;
-        } catch (error) {
-            toast.error(error?.response?.data?.message || 'Error logging out', {
-                position: 'bottom-right',
-                autoClose: 3000,
-                pauseOnHover: true,
-                transition: Bounce,
-            });
-            return rejectWithValue(error.response?.data);
-        }
+    "auth/logout",
+    async (_, { dispatch }) => {
+      try {
+        dispatch(clearAuth());
+  
+        toast.success("Logged out", {
+          position: "bottom-right",
+          autoClose: 3000,
+          pauseOnHover: true,
+          transition: Bounce,
+        });
+      } catch (error) {
+        toast.error("Error logging out", {
+          position: "bottom-right",
+          autoClose: 3000,
+          pauseOnHover: true,
+          transition: Bounce,
+        });
+      }
     }
-);
+  );
 export const updateuserprofile = createAsyncThunk(
     'auth/updateuserprofile',
     async (payload, { rejectWithValue }) => {

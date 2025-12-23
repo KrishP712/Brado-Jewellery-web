@@ -31,7 +31,8 @@ function Header() {
   const user = useSelector((state) => state?.auth?.user);
 
   const userlogout = () => {
-    dispatch(logout(navigate));
+    dispatch(logout());
+    navigate("/"); 
     setShowUserMenu(false);
     setIsMenuOpen(false);
   };
@@ -97,11 +98,11 @@ function Header() {
   const totalCartItems = cart[0]?.products?.reduce((total, item) => total + item.quantity, 0);
   return (
     <>
-        {/* Top Bar */}
-        <div className="bg-[#544f49] text-white text-[10px] sm:text-[12px] tracking-wider text-center py-1 sm:py-2">
-          <span className="hidden sm:inline">Free shipping on orders of 6 items or more</span>
-          <span className="sm:hidden">Free shipping 6+ items</span>
-        </div>
+      {/* Top Bar */}
+      <div className="bg-[#544f49] text-white text-[10px] sm:text-[12px] tracking-wider text-center py-1 sm:py-2">
+        <span className="hidden sm:inline">Free shipping on orders of 6 items or more</span>
+        <span className="sm:hidden">Free shipping 6+ items</span>
+      </div>
 
       <header className="w-full sticky top-0 z-[500]">
         {/* Main Header */}
@@ -324,9 +325,9 @@ function Header() {
                 <button
                   onClick={() => {
                     if (token) {
-                      userlogout();        
+                      userlogout();
                     } else {
-                      openSignInModal();   
+                      openSignInModal();
                     }
                     setIsMenuOpen(false);
                   }}
