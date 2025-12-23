@@ -520,8 +520,7 @@ const BuyNow = () => {
                     <div className="flex border border-gray-200 p-[2px] rounded">
                       <button
                         onClick={() => handleDecreaseQuantity(item.productId)}
-                        disabled={
-                          operationStatus === "loading" || item.quantity <= 1
+                        disabled={ item.quantity <= 1
                         }
                         className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"
                       >
@@ -533,7 +532,6 @@ const BuyNow = () => {
                       <button
                         onClick={() => handleIncreaseQuantity(item.productId)}
                         disabled={
-                          operationStatus === "loading" ||
                           item.quantity >= item.stock
                         }
                         className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"
