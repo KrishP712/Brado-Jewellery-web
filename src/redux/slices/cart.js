@@ -161,14 +161,20 @@ const cartSlice = createSlice({
                 state.operationStatus = 'loading';
             })
             .addCase(increaseCartQuantity.fulfilled, (state, action) => {
-                const item = state.cart.products?.find(
-                    (p) => p.productId === action.payload.productId
+                state.operationStatus = 'succeeded';
+              
+                if (!state.cart?.length) return;
+              
+                const products = state.cart[0].products;
+              
+                const item = products.find(
+                  (p) => p.productId === action.payload.productId
                 );
-
                 if (item) {
-                    item.quantity += 1; 
+                  item.quantity += 1; 
                 }
-            })
+              })
+              
             .addCase(increaseCartQuantity.rejected, (state, action) => {
                 state.operationStatus = 'failed';
                 state.error = action.payload;
