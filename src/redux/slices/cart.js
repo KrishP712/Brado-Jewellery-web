@@ -174,7 +174,7 @@ const cartSlice = createSlice({
                 if (item) {
                   item.quantity += 1; // ✅ UI updates instantly
                 }
-              });
+              })
               
             .addCase(increaseCartQuantity.rejected, (state, action) => {
                 state.operationStatus = 'failed';
