@@ -2,7 +2,9 @@ import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { getCategory } from '../../../redux/slices/category';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 const SubHeader = () => {
+    const navigate = useNavigate()
     const categories = useSelector((state) => state.category.categories);
     const dispatch = useDispatch();
     useEffect(() => {
@@ -15,8 +17,8 @@ const SubHeader = () => {
                     <ul className="flex justify-center items-center space-x-7 pt-2.5 pb-3 px-4">
                         {categories.map((item, index) => (
                             <li key={index}>
-                                <a
-                                    href={`/category/${item.categorySlug}`}
+                                <p
+                                onClick={() => navigate(`/category/${item.categorySlug}`)}
                                     style={{
                                         wordSpacing: "3.5px",
                                     }}
@@ -33,7 +35,7 @@ const SubHeader = () => {
                       "
                                 >
                                     {item.categoryName}
-                                </a>
+                                </p>
                             </li>
                         ))}
                     </ul>
