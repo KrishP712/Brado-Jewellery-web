@@ -1361,7 +1361,7 @@ const BuyNow = () => {
   const cartData = cart?.[0] || {};
   const products = cartData?.products || [];
   const totalItems = products.length;
-
+  console.log(totalItems)
   const nextStep = () => setCurrentStep((s) => Math.min(s + 1, 4));
   const prevStep = () => setCurrentStep((s) => Math.max(s - 1, 1));
 
