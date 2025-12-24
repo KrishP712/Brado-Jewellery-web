@@ -117,7 +117,7 @@ const BuyNow = () => {
   // Extract cart data safely
   const cartData = cart[0] || {};
   const products = cartData?.products || [];
-  const totalItems = products.length;
+  // const totalItems = products.length;
   // Calculate totals
   const calculateTotals = () => {
     let totalMRP = 0;
