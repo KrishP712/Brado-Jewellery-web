@@ -9,8 +9,8 @@ import { createOrder } from '../../redux/slices/order';
 import { getCouponData } from '../../redux/slices/coupon';
 import { getAddressData, createAddressData } from '../../redux/slices/address';
 import { getorderbyorderidData } from '../../redux/slices/order';
-        
-const Cart = () => {
+
+const Cart = ({products}) => {
 
             // if (status === "loading") {
             //     return <div className="text-center py-10">Loading cart...</div>;
