@@ -1339,7 +1339,7 @@ import { getCouponData } from "../../redux/slices/coupon";
 import { getAddressData, createAddressData } from "../../redux/slices/address";
 import { createOrder, getorderbyorderidData } from "../../redux/slices/order";
 
-import CartStep from "./steps/CartStep";
+import CartStep from "../CartSteps/Cart";
 import AddressStep from "./steps/AddressStep";
 import PaymentStep from "./steps/PaymentStep";
 import CompleteStep from "./steps/CompleteStep";
