@@ -28,7 +28,6 @@
 // import { addToWishlist } from '../../redux/slices/wishlist';
 // import { getCouponData } from '../../redux/slices/coupon';
 // import { getAddressData, createAddressData } from '../../redux/slices/address';
-// import Cart from '../CartSteps/Cart';
 
 // const BuyNow = () => {
 //   const dispatch = useDispatch();
@@ -212,6 +211,7 @@
 //         50 -
 //         (cartData.coupon_discount || 0),
 
+//       // ✅ Payment & Addresses
 //       paymentMethod: "COD",
 //       shippingAddress: {
 //         contactPersonName: formData.contactName,
@@ -260,6 +260,7 @@
 //   const handleApplyAddress = (address) => {
 //     if (!address) return;
 
+//     // Update the formData with selected address details
 //     setFormData((prev) => ({
 //       ...prev,
 //       contactName: address.name || '',
@@ -410,238 +411,238 @@
 //     );
 //   };
 
-//   // const ShoppingCartStep = () => {
-//   //   if (status === "loading") {
-//   //     return <div className="text-center py-10">Loading cart...</div>;
-//   //   }
+//   const ShoppingCartStep = () => {
+//     if (status === "loading") {
+//       return <div className="text-center py-10">Loading cart...</div>;
+//     }
 
-//   //   if (!products || products.length === 0 || !products[0]?.price) {
-//   //     return (
-//   //       <div className="text-center py-10">
-//   //         <p className="text-gray-600 mb-4">Your cart is empty</p>
-//   //         <button
-//   //           className="bg-[#b4853e] text-white px-6 py-3 rounded"
-//   //           onClick={() => navigate("/")}
-//   //         >
-//   //           Continue Shopping
-//   //         </button>
-//   //       </div>
-//   //     );
-//   //   }
+//     if (!products || products.length === 0 || !products[0]?.price) {
+//       return (
+//         <div className="text-center py-10">
+//           <p className="text-gray-600 mb-4">Your cart is empty</p>
+//           <button
+//             className="bg-[#b4853e] text-white px-6 py-3 rounded"
+//             onClick={() => navigate("/")}
+//           >
+//             Continue Shopping
+//           </button>
+//         </div>
+//       );
+//     }
 
-//   //   return (
-//   //     <div className="grid lg:grid-cols-3 gap-8 w-[90%] mx-auto">
-//   //       <div className="lg:col-span-2">
-//   //         <h2 className="mb-6 text-[23px]">
-//   //           Shopping Cart{" "}
-//   //           <span className="text-[#b4853e] text-[14px] ml-[10px]">
-//   //             {totalItems} Items
-//   //           </span>
-//   //         </h2>
+//     return (
+//       <div className="grid lg:grid-cols-3 gap-8 w-[90%] mx-auto">
+//         <div className="lg:col-span-2">
+//           <h2 className="mb-6 text-[23px]">
+//             Shopping Cart{" "}
+//             <span className="text-[#b4853e] text-[14px] ml-[10px]">
+//               {totalItems} Items
+//             </span>
+//           </h2>
 
-//   //         {products.map((item) => (
-//   //           <div
-//   //             key={item.productId || item._id}
-//   //             className="border-b border-gray-300 pb-[15px] mb-4 relative"
-//   //           >
-//   //             <div className="absolute top-2 right-2 md:flex space-x-2 hidden">
-//   //               <div
-//   //                 className="text-[13px] text-gray-900 cursor-pointer"
-//   //                 onClick={() => handleAddToWishlist(item.productId)}
-//   //               >
-//   //                 Move to wishlist
-//   //               </div>
-//   //               <div className="w-px h-4 bg-gray-300" />
-//   //               <div
-//   //                 className="text-[13px] text-red-800 cursor-pointer"
-//   //                 onClick={() => handleRemoveProduct(item.productId)}
-//   //               >
-//   //                 Remove
-//   //               </div>
-//   //             </div>
+//           {products.map((item) => (
+//             <div
+//               key={item.productId || item._id}
+//               className="border-b border-gray-300 pb-[15px] mb-4 relative"
+//             >
+//               <div className="absolute top-2 right-2 md:flex space-x-2 hidden">
+//                 <div
+//                   className="text-[13px] text-gray-900 cursor-pointer"
+//                   onClick={() => handleAddToWishlist(item.productId)}
+//                 >
+//                   Move to wishlist
+//                 </div>
+//                 <div className="w-px h-4 bg-gray-300" />
+//                 <div
+//                   className="text-[13px] text-red-800 cursor-pointer"
+//                   onClick={() => handleRemoveProduct(item.productId)}
+//                 >
+//                   Remove
+//                 </div>
+//               </div>
 
-//   //             {/* === Product Info === */}
-//   //             <div className="flex items-center justify-between">
-//   //               <div className="flex space-x-4">
-//   //                 <img
-//   //                   src={item.image}
-//   //                   alt={item.title}
-//   //                   className="w-27 h-35 object-cover"
-//   //                 />
+//               {/* === Product Info === */}
+//               <div className="flex items-center justify-between">
+//                 <div className="flex space-x-4">
+//                   <img
+//                     src={item.image}
+//                     alt={item.title}
+//                     className="w-27 h-35 object-cover"
+//                   />
 
-//   //                 <div className="flex-1">
-//   //                   <p className="text-[#696661] text-[12px]">SKU: {item.sku}</p>
-//   //                   <h4 className="text-[14px]">{item.title}</h4>
-//   //                   <div className="flex items-center space-x-2 mt-1">
-//   //                     <span className="text-[14px]">₹{item.price}</span>
-//   //                     {item.discount > 0 && (
-//   //                       <>
-//   //                         <span className="text-gray-600 line-through text-[14px]">
-//   //                           ₹{item.originalPrice}
-//   //                         </span>
-//   //                         <span className="text-[#b4853e] text-[12px]">
-//   //                           ({item.discount}% OFF)
-//   //                         </span>
-//   //                       </>
-//   //                     )}
-//   //                   </div>
-//   //                   <p className="text-[12px] text-gray-600 mt-1">Category: {item.category}</p>
-//   //                   {item.stock < 10 && (
-//   //                     <p className="text-[12px] text-red-600 mt-1">
-//   //                       Only {item.stock} left in stock!
-//   //                     </p>
-//   //                   )}
+//                   <div className="flex-1">
+//                     <p className="text-[#696661] text-[12px]">SKU: {item.sku}</p>
+//                     <h4 className="text-[14px]">{item.title}</h4>
+//                     <div className="flex items-center space-x-2 mt-1">
+//                       <span className="text-[14px]">₹{item.price}</span>
+//                       {item.discount > 0 && (
+//                         <>
+//                           <span className="text-gray-600 line-through text-[14px]">
+//                             ₹{item.originalPrice}
+//                           </span>
+//                           <span className="text-[#b4853e] text-[12px]">
+//                             ({item.discount}% OFF)
+//                           </span>
+//                         </>
+//                       )}
+//                     </div>
+//                     <p className="text-[12px] text-gray-600 mt-1">Category: {item.category}</p>
+//                     {item.stock < 10 && (
+//                       <p className="text-[12px] text-red-600 mt-1">
+//                         Only {item.stock} left in stock!
+//                       </p>
+//                     )}
 
-//   //                   {item.offer && !item.itemOfferDiscount > 0 && (
-//   //                     <div className="bg-[#f9f6f1] rounded-md mt-2 py-2 px-2 flex items-center justify-between w-fit min-w-[200px]">
-//   //                       <div className="flex items-center gap-2">
-//   //                         <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#b4853e] text-white flex-shrink-0">
-//   //                           <BadgePercent size={12} strokeWidth={2} />
-//   //                         </span>
-//   //                         <span className="text-xs text-[#3b2b1b] font-medium">{item.offer}</span>
-//   //                       </div>
-//   //                       <ChevronRight className="w-4 h-4 text-[#b4853e] ml-2" />
-//   //                     </div>
-//   //                   )}
+//                     {item.offer && !item.itemOfferDiscount > 0 && (
+//                       <div className="bg-[#f9f6f1] rounded-md mt-2 py-2 px-2 flex items-center justify-between w-fit min-w-[200px]">
+//                         <div className="flex items-center gap-2">
+//                           <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#b4853e] text-white flex-shrink-0">
+//                             <BadgePercent size={12} strokeWidth={2} />
+//                           </span>
+//                           <span className="text-xs text-[#3b2b1b] font-medium">{item.offer}</span>
+//                         </div>
+//                         <ChevronRight className="w-4 h-4 text-[#b4853e] ml-2" />
+//                       </div>
+//                     )}
 
-//   //                   {item.offers?.[0] &&
-//   //                     item.quantity >= item.offers[0].minQuantity &&
-//   //                     item.offers[0].active && (
-//   //                       <p className="text-green-600 text-sm mt-1 font-medium">
-//   //                         Bulk Deal Discount: ₹{item.itemOfferDiscount?.toFixed(2) || 0}
-//   //                       </p>
-//   //                     )}
-//   //                 </div>
+//                     {item.offers?.[0] &&
+//                       item.quantity >= item.offers[0].minQuantity &&
+//                       item.offers[0].active && (
+//                         <p className="text-green-600 text-sm mt-1 font-medium">
+//                           Bulk Deal Discount: ₹{item.itemOfferDiscount?.toFixed(2) || 0}
+//                         </p>
+//                       )}
+//                   </div>
 
-//   //                 <div className="flex items-center gap-3">
-//   //                   <div className="flex border border-gray-200 p-[2px] rounded">
-//   //                     <button
-//   //                       type='button'
-//   //                       onClick={() => handleDecreaseQuantity(item.productId)}
-//   //                       disabled={item.quantity <= 1
-//   //                       }
-//   //                       className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"
-//   //                     >
-//   //                       <Minus className="w-4 h-4" />
-//   //                     </button>
-//   //                     <span className="mx-4 mt-1 font-[8px]">
-//   //                       {item.quantity}
-//   //                     </span>
-//   //                     <button
-//   //                       type='button'
-//   //                       onClick={() => handleIncreaseQuantity(item.productId)}
-//   //                       disabled={
-//   //                         item.quantity >= item.stock
-//   //                       }
-//   //                       className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"
-//   //                     >
-//   //                       <Plus className="w-4 h-4" />
-//   //                     </button>
-//   //                   </div>
-//   //                 </div>
-//   //               </div>
+//                   <div className="flex items-center gap-3">
+//                     <div className="flex border border-gray-200 p-[2px] rounded">
+//                       <button
+//                         type='button'
+//                         onClick={() => handleDecreaseQuantity(item.productId)}
+//                         disabled={item.quantity <= 1
+//                         }
+//                         className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"
+//                       >
+//                         <Minus className="w-4 h-4" />
+//                       </button>
+//                       <span className="mx-4 mt-1 font-[8px]">
+//                         {item.quantity}
+//                       </span>
+//                       <button
+//                       type='button'
+//                         onClick={() => handleIncreaseQuantity(item.productId)}
+//                         disabled={
+//                           item.quantity >= item.stock
+//                         }
+//                         className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"
+//                       >
+//                         <Plus className="w-4 h-4" />
+//                       </button>
+//                     </div>
+//                   </div>
+//                 </div>
 
-//   //               <span className="ml-4 text-lg font-bold">
-//   //                 ₹{item.itemTotal?.toFixed(2)}
-//   //               </span>
-//   //             </div>
-//   //           </div>
-//   //         ))}
-//   //       </div>
+//                 <span className="ml-4 text-lg font-bold">
+//                   ₹{item.itemTotal?.toFixed(2)}
+//                 </span>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
 
-//   //       <div className="bg-white rounded-lg p-6 h-fit">
-//   //         <div className="flex items-center justify-between mb-4 bg-[#f3f9f6] p-4 rounded-md">
-//   //           <div>
-//   //             <h3 className="text-[16px]">🎫 Apply Coupons</h3>
-//   //             <p className="text-[12px] mt-[5px] text-gray-600">
-//   //               To reveal exclusive discounts and start saving instantly.
-//   //             </p>
-//   //           </div>
-//   //           <button
-//   //             onClick={() => setShowCouponModal(true)}
-//   //             className="px-3 py-2 bg-green-600 text-white rounded-sm hover:bg-green-700 text-[14px]"
-//   //           >
-//   //             Apply
-//   //           </button>
-//   //         </div>
+//         <div className="bg-white rounded-lg p-6 h-fit">
+//           <div className="flex items-center justify-between mb-4 bg-[#f3f9f6] p-4 rounded-md">
+//             <div>
+//               <h3 className="text-[16px]">🎫 Apply Coupons</h3>
+//               <p className="text-[12px] mt-[5px] text-gray-600">
+//                 To reveal exclusive discounts and start saving instantly.
+//               </p>
+//             </div>
+//             <button
+//               onClick={() => setShowCouponModal(true)}
+//               className="px-3 py-2 bg-green-600 text-white rounded-sm hover:bg-green-700 text-[14px]"
+//             >
+//               Apply
+//             </button>
+//           </div>
 
-//   //         <div className="pt-4">
-//   //           <h3 className="mb-4 text-[16px]">
-//   //             Order Summary{" "}
-//   //             <span className="text-[#696661] text-[14px]">
-//   //               (items {totalItems})
-//   //             </span>
-//   //           </h3>
+//           <div className="pt-4">
+//             <h3 className="mb-4 text-[16px]">
+//               Order Summary{" "}
+//               <span className="text-[#696661] text-[14px]">
+//                 (items {totalItems})
+//               </span>
+//             </h3>
 
-//   //           <div className="space-y-2 mb-4">
-//   //             <div className="flex justify-between">
-//   //               <span className="text-[#696661] text-[14px]">Total MRP</span>
-//   //               <span className="text-[14px]">
-//   //                 ₹{cartData?.total_mrp_amount || 0}
-//   //               </span>
-//   //             </div>
+//             <div className="space-y-2 mb-4">
+//               <div className="flex justify-between">
+//                 <span className="text-[#696661] text-[14px]">Total MRP</span>
+//                 <span className="text-[14px]">
+//                   ₹{cartData?.total_mrp_amount || 0}
+//                 </span>
+//               </div>
 
-//   //             <div className="flex justify-between text-green-600">
-//   //               <span className="text-[#696661] text-[14px]">Discount</span>
-//   //               <span className="text-[14px]">
-//   //                 -₹{cartData?.total_sale_discount || 0}
-//   //               </span>
-//   //             </div>
+//               <div className="flex justify-between text-green-600">
+//                 <span className="text-[#696661] text-[14px]">Discount</span>
+//                 <span className="text-[14px]">
+//                   -₹{cartData?.total_sale_discount || 0}
+//                 </span>
+//               </div>
 
-//   //             {products.map((item, index) => (
-//   //               item.itemOfferDiscount > 0 && (
-//   //                 <div className="flex justify-between text-green-600" key={index}>
-//   //                   <span className="text-[#696661] text-[14px]">
-//   //                     Offer Discount ({item.offers?.[0].value}%)
-//   //                   </span>
-//   //                   <span className="text-[14px]">
-//   //                     -₹{item.itemOfferDiscount?.toFixed(2)}
-//   //                   </span>
-//   //                 </div>
-//   //               )
-//   //             ))}
-//   //             {cartData?.coupon_discount > 0 && (
-//   //               <div className="flex justify-between text-green-600">
-//   //                 <span className="text-[#696661] text-[14px]">
-//   //                   Coupon Discount ({cart?.coupon?.discountValue})
-//   //                 </span>
-//   //                 <span className="text-[14px]">
-//   //                   -₹{cartData?.coupon_discount?.toFixed(2)}
-//   //                 </span>
-//   //               </div>
-//   //             )}
-//   //           </div>
+//               {products.map((item, index) => (
+//                 item.itemOfferDiscount > 0 && (
+//                   <div className="flex justify-between text-green-600" key={index}>
+//                     <span className="text-[#696661] text-[14px]">
+//                       Offer Discount ({item.offers?.[0].value}%)
+//                     </span>
+//                     <span className="text-[14px]">
+//                       -₹{item.itemOfferDiscount?.toFixed(2)}
+//                     </span>
+//                   </div>
+//                 )
+//               ))}
+//               {cartData?.coupon_discount > 0 && (
+//                 <div className="flex justify-between text-green-600">
+//                   <span className="text-[#696661] text-[14px]">
+//                     Coupon Discount ({cart?.coupon?.discountValue})
+//                   </span>
+//                   <span className="text-[14px]">
+//                     -₹{cartData?.coupon_discount?.toFixed(2)}
+//                   </span>
+//                 </div>
+//               )}
+//             </div>
 
-//   //           <div className="border-t pt-2 mb-6">
-//   //             <div className="flex justify-between text-lg">
-//   //               <span className="text-[16px]">
-//   //                 {cartData?.coupon_discount > 0 ? "Grand Total" : "Total"}
-//   //               </span>
-//   //               <span className="text-[16px] font-semibold">
-//   //                 ₹
-//   //                 {cartData?.coupon_discount > 0
-//   //                   ? cartData?.total_amount?.toFixed(2)
-//   //                   : cartData?.total_amount?.toFixed(2)}
-//   //               </span>
-//   //             </div>
-//   //           </div>
+//             <div className="border-t pt-2 mb-6">
+//               <div className="flex justify-between text-lg">
+//                 <span className="text-[16px]">
+//                   {cartData?.coupon_discount > 0 ? "Grand Total" : "Total"}
+//                 </span>
+//                 <span className="text-[16px] font-semibold">
+//                   ₹
+//                   {cartData?.coupon_discount > 0
+//                     ? cartData?.total_amount?.toFixed(2)
+//                     : cartData?.total_amount?.toFixed(2)}
+//                 </span>
+//               </div>
+//             </div>
 
-//   //           <button
-//   //             onClick={nextStep}
-//   //             disabled={totalItems === 0}
-//   //             className="w-full bg-[#b4853e] text-white py-3 mb-4 disabled:opacity-50"
-//   //           >
-//   //             Check Out
-//   //           </button>
-//   //           <button className="w-full text-[#b4853e] py-2 flex items-center gap-2 cursor-pointer">
-//   //             <ArrowLeft className="w-4 h-4" />
-//   //             Continue Shopping
-//   //           </button>
-//   //         </div>
-//   //       </div>
-//   //     </div>
-//   //   );
-//   // };
+//             <button
+//               onClick={nextStep}
+//               disabled={totalItems === 0}
+//               className="w-full bg-[#b4853e] text-white py-3 mb-4 disabled:opacity-50"
+//             >
+//               Check Out
+//             </button>
+//             <button className="w-full text-[#b4853e] py-2 flex items-center gap-2 cursor-pointer">
+//               <ArrowLeft className="w-4 h-4" />
+//               Continue Shopping
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   };
 
 
 //   const AddressStep = ({ formData, handleInputChange, errors, setErrors }) => (
@@ -1266,18 +1267,7 @@
 //   const renderStep = () => {
 //     switch (currentStep) {
 //       case 1:
-//         return <Cart
-//           products={products}
-//           totalItems={totalItems}
-//           cartData={cartData}
-//           cart={cart}
-//           onIncrease={handleIncreaseQuantity}
-//           onDecrease={handleDecreaseQuantity}
-//           onRemove={handleRemoveProduct}
-//           onWishlist={handleAddToWishlist}
-//           onCheckout={nextStep}
-//           onShowCoupon={() => setShowCouponModal(true)}
-//         />;
+//         return <ShoppingCartStep />;
 //       case 2:
 //         return (
 //           <AddressStep
@@ -1303,7 +1293,7 @@
 //           <div className="flex items-center gap-2 text-sm text-gray-600">
 //             <Home className="w-4 h-4" />
 //             <span>Home</span>
-//             <span>/</span>
+//             <span>›</span>
 //             <span>Shopping Cart</span>
 //           </div>
 //         </div>
@@ -1324,97 +1314,261 @@
 
 
 
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Home } from "lucide-react";
+
+
+// src/components/checkout/BuyNow.jsx
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import {
   getCartData,
   increaseCartQuantity,
   decreaseCartQuantity,
-  removeCartData,
-} from "../../redux/slices/cart";
-import { addToWishlist } from "../../redux/slices/wishlist";
-import { getCouponData } from "../../redux/slices/coupon";
-import { getAddressData, createAddressData } from "../../redux/slices/address";
-import { createOrder, getorderbyorderidData } from "../../redux/slices/order";
+  removeCartData
+} from '../../redux/slices/cart';
+import { createOrder, getorderbyorderidData } from '../../redux/slices/order';
+import { addToWishlist } from '../../redux/slices/wishlist';
+import { getCouponData } from '../../redux/slices/coupon';
+import { getAddressData, createAddressData } from '../../redux/slices/address';
 
-import CartStep from "../CartSteps/Cart";
-import AddressStep from "./steps/AddressStep";
-import PaymentStep from "./steps/PaymentStep";
-import CompleteStep from "./steps/CompleteStep";
-import StepIndicator from "./components/StepIndicator";
-import CouponModal from "./components/CouponModal";
+import StepIndicator from '../CartSteps/StepIndicator';
+import CouponModal from '../CartSteps/CouponModal';
+import ShoppingCartStep from '../CartSteps/ShoppingCartStep';
+import AddressStep from '../CartSteps/AddressStep';
+import PaymentStep from '../CartSteps/PaymentStep';
+import CompleteStep from '../CartSteps/CompleteStep';
+
+import { Home } from 'lucide-react';
 
 const BuyNow = () => {
   const dispatch = useDispatch();
-  const { cart } = useSelector((state) => state.cart);
+  const navigate = useNavigate();
+
+  const { cart, status } = useSelector((state) => state.cart);
+  const { address } = useSelector((state) => state.address.address);
+  const addressData = address?.address;
+  const { coupon, loading } = useSelector((state) => state.coupon.coupon);
+  const order = useSelector((state) => state.order.order);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [showCouponModal, setShowCouponModal] = useState(false);
-  const [couponcode, setCouponcode] = useState("");
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [couponcode, setCouponcode] = useState('');
+  const [selectedCouponId, setSelectedCouponId] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [errors, setErrors] = useState({});
 
+  const [formData, setFormData] = useState({
+    contactName: '', email: '', contactNo: '', addressLine1: '', addressLine2: '',
+    landmark: '', city: '', state: '', pinCode: '',
+    billingName: '', billingAddress1: '', billingAddress2: '', billingCity: '',
+    billingState: '', billingPin: '', sameAddress: true, addStatutory: false,
+    companyName: '', gstNo: ''
+  });
+
+  const cartData = cart[0] || {};
+  const products = cartData?.products || [];
+
+  // Effects
   useEffect(() => {
-    dispatch(getCartData(couponcode));
+    dispatch(couponcode ? getCartData(couponcode) : getCartData());
   }, [dispatch, couponcode]);
 
-  const cartData = cart?.[0] || {};
-  const products = cartData?.products || [];
-  const totalItems = products.length;
-  console.log(totalItems)
-  const nextStep = () => setCurrentStep((s) => Math.min(s + 1, 4));
-  const prevStep = () => setCurrentStep((s) => Math.max(s - 1, 1));
+  useEffect(() => {
+    if (showCouponModal) dispatch(getCouponData());
+  }, [showCouponModal, dispatch]);
+
+  useEffect(() => {
+    if (showAddressModal) dispatch(getAddressData());
+  }, [showAddressModal, dispatch]);
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 4));
+  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+
+  const handleApplyCoupon = (code) => {
+    if (code.trim()) {
+      setCouponcode(code);
+    }
+  };
+
+  const handleSelectCoupon = (couponId) => {
+    const selected = coupon.find(c => c._id === couponId);
+    if (selected) {
+      setCouponcode(selected.code);
+      setSelectedCouponId(selected._id);
+      handleApplyCoupon(selected.code);
+      setShowCouponModal(false);
+    }
+  };
+
+  const handleApplyAddress = (address) => {
+    if (!address) return;
+    setFormData(prev => ({
+      ...prev,
+      contactName: address.name || '',
+      contactNo: address.contactno || '',
+      addressLine1: address.address1 || '',
+      addressLine2: address.address2 || '',
+      landmark: address.landmark || '',
+      city: address.city || '',
+      state: address.state || '',
+      pinCode: address.pincode || '',
+    }));
+    setSelectedAddress(address);
+    setShowAddressModal(false);
+  };
+
+  const handleNextStep = async () => {
+    if (selectedAddress?._id) {
+      nextStep();
+      return;
+    }
+
+    const payload = {
+      name: formData.contactName,
+      contactno: formData.contactNo,
+      email: formData.email,
+      address1: formData.addressLine1,
+      address2: formData.addressLine2,
+      landmark: formData.landmark,
+      city: formData.city,
+      state: formData.state,
+      pincode: formData.pinCode,
+      country: "India",
+    };
+
+    try {
+      await dispatch(createAddressData(payload)).unwrap();
+      nextStep();
+    } catch (err) {
+      console.log("Address creation failed");
+    }
+  };
+
+  const handleOrder = async () => {
+    if (!cartData?.products?.length) {
+      alert("Cart is empty!");
+      return;
+    }
+
+    const orderPayload = {
+      items: cartData.products.map(p => ({
+        productId: p.productId,
+        title: p.title,
+        sku: p.sku,
+        slug: p.slug,
+        quantity: p.quantity,
+        price: p.price,
+        originalPrice: p.originalPrice,
+        discount: p.discount || 0,
+        totalPrice: p.itemPrice
+      })),
+      subtotal: cartData.total_product_price || cartData.products.reduce((acc, p) => acc + (p.itemPrice || p.price * p.quantity), 0),
+      shippingFee: 50,
+      couponcode: selectedCouponId,
+      couponDiscount: cartData.coupon_discount || 0,
+      totalAmount: (cartData.total_amount || cartData.products.reduce((acc, p) => acc + (p.itemPrice || p.price * p.quantity), 0)) + 50 - (cartData.coupon_discount || 0),
+      paymentMethod: "COD",
+      shippingAddress: {
+        contactPersonName: formData.contactName,
+        contactNo: formData.contactNo,
+        address: formData.addressLine1,
+        address2: formData.addressLine2,
+        landmark: formData.landmark,
+        city: formData.city,
+        state: formData.state,
+        pincode: formData.pinCode,
+      },
+      billingAddress: { /* same as shipping if sameAddress */ },
+      isBillingAddressSame: formData.sameAddress,
+    };
+
+    const result = await dispatch(createOrder(orderPayload));
+    const orderId = result?.payload?.order?.orderId;
+    if (orderId) {
+      dispatch(getorderbyorderidData(orderId));
+      nextStep();
+    }
+  };
+
+  const sharedProps = {
+    cartData,
+    products,
+    couponcode,
+    selectedCouponId,
+    formData,
+    handleInputChange,
+    selectedAddress,
+    setSelectedAddress,
+    showAddressModal,
+    setShowAddressModal,
+    addressData,
+    handleApplyAddress,
+    coupon,
+    loading,
+    showCouponModal,
+    setShowCouponModal,
+    handleApplyCoupon,
+    handleSelectCoupon,
+    status,
+    dispatch,
+    navigate,
+    nextStep,
+    prevStep,
+    handleNextStep,
+    handleOrder,
+    order,
+  };
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1: return <ShoppingCartStep {...sharedProps} />;
+      case 2: return <AddressStep {...sharedProps} errors={errors} setErrors={setErrors} />;
+      case 3: return <PaymentStep {...sharedProps} />;
+      case 4: return <CompleteStep {...sharedProps} />;
+      default: return <ShoppingCartStep {...sharedProps} />;
+    }
+  };
 
   return (
     <div className="min-h-screen">
       <div className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-2 text-sm text-gray-600">
-          <Home size={16} />
-          Home / Shopping Cart
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Home className="w-4 h-4" />
+            <span>Home</span>
+            <span> / </span>
+            <span>Shopping Cart</span>
+          </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
         <StepIndicator currentStep={currentStep} />
-
-        {currentStep === 1 && (
-          <CartStep
-            products={products}
-            totalItems={totalItems}
-            cartData={cartData}
-            onIncrease={(id) => dispatch(increaseCartQuantity(id))}
-            onDecrease={(id) => dispatch(decreaseCartQuantity(id))}
-            onRemove={(id) => dispatch(removeCartData(id))}
-            onWishlist={(id) => dispatch(addToWishlist(id))}
-            onCheckout={nextStep}
-            onShowCoupon={() => {
-              dispatch(getCouponData());
-              setShowCouponModal(true);
-            }}
-          />
-        )}
-
-        {currentStep === 2 && (
-          <AddressStep nextStep={nextStep} prevStep={prevStep} />
-        )}
-
-        {currentStep === 3 && (
-          <PaymentStep nextStep={nextStep} prevStep={prevStep} />
-        )}
-
-        {currentStep === 4 && <CompleteStep />}
+        {renderStep()}
       </div>
 
       <CouponModal
         open={showCouponModal}
         onClose={() => setShowCouponModal(false)}
+        couponcode={couponcode}
         setCouponcode={setCouponcode}
+        handleApplyCoupon={handleApplyCoupon}
+        handleSelectCoupon={handleSelectCoupon}
+        coupon={coupon}
+        loading={loading}
       />
     </div>
   );
 };
 
 export default BuyNow;
-
-
-
