@@ -1,4 +1,3 @@
-// src/components/checkout/StepIndicator.jsx
 import React from 'react';
 import { ShoppingCart, MapPin, CreditCard, CheckCircle } from 'lucide-react';
 

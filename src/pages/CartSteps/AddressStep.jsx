@@ -1,4 +1,3 @@
-// src/components/checkout/AddressStep.jsx
 import React from 'react';
 import { X, CheckBoxIcon } from '../../assets/icons'; // adjust path
 import add from "../../assets/images/wishlist/address.png";

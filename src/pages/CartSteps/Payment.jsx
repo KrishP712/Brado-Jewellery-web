@@ -1,4 +1,3 @@
-// src/components/checkout/PaymentStep.jsx
 import React from 'react';
 
 const PaymentStep = ({ cartData, products, handleOrder, prevStep }) => {

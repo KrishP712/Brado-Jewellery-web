@@ -1,4 +1,3 @@
-// src/components/checkout/CompleteStep.jsx
 import React from 'react';
 import { Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
