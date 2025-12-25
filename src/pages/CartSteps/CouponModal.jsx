@@ -48,12 +48,14 @@ const CouponModal = ({
             <p className="text-center text-gray-500">Loading coupons...</p>
           ) : couponData?.filter((c) => c.isactive === true)?.length > 0 ? (
             <div className="space-y-3">
-              {couponData?.filter((c) => c.isactive === true).map((c) => (
-                  <div
-                    key={c._id}
-                    onClick={() => handleSelectCoupon(c._id)}
-                    className="border border-amber-400 rounded-lg p-3 hover:bg-amber-50 transition-all cursor-pointer"
-                  >
+              {couponData?.filter((c) => c.isactive === true)
+              .map((c) => (
+                console.log(c, "c"),
+                <div
+                  key={c._id}
+                  onClick={() => handleSelectCoupon(c._id)}
+                  className="border border-amber-400 rounded-lg p-3 hover:bg-amber-50 transition-all cursor-pointer"
+                >
                     <p className="font-semibold text-amber-600">{c.code}</p>
                     <p className="text-sm text-gray-600">
                       {c.discountType === "percentage"
