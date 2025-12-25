@@ -1344,8 +1344,8 @@ const BuyNow = () => {
   const { cart, status } = useSelector((state) => state.cart);
   const { address } = useSelector((state) => state.address.address);
   const addressData = address?.address;
-  const { coupon, loading } = useSelector((state) => state.coupon.coupon);
-  console.log(coupon, "coupon");
+  const { coupon, loading } = useSelector((state) => state.coupon.coupons);
+
   const couponData = useSelector((state) => console.log(state.coupon));
   console.log(couponData, "couponData");
   const order = useSelector((state) => state.order.order);
@@ -1409,6 +1409,8 @@ const BuyNow = () => {
   };
   const totals = calculateTotals();
   const totalItems = products.length;
+
+  const couponDiscount = couponData?.find((coupon) => coupon._id === selectedCouponId)?.discount || 0;
   // Effects
   useEffect(() => {
     dispatch(couponcode ? getCartData(couponcode) : getCartData());
