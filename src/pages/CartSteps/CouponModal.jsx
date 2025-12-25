@@ -46,9 +46,9 @@ const CouponModal = ({
         <div className="mt-4">
           {loading ? (
             <p className="text-center text-gray-500">Loading coupons...</p>
-          ) : couponData?.filter((c) => c.isactive)?.length > 0 ? (
+          ) : couponData?.filter((c) => c.isactive === true)?.length > 0 ? (
             <div className="space-y-3">
-              {couponData?.filter((c) => c.isactive).map((c) => (
+              {couponData?.filter((c) => c.isactive === true).map((c) => (
                   <div
                     key={c._id}
                     onClick={() => handleSelectCoupon(c._id)}
