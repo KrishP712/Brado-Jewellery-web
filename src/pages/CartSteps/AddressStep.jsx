@@ -1,6 +1,7 @@
 import React from 'react';
-import { X, CheckBoxIcon } from '../../assets/icons'; // adjust path
 import add from "../../assets/images/wishlist/address.png";
+import CheckBoxIcon from '../../assets/icons/CheckBox';
+import CloseIcon from '../../assets/icons/CloseIcon';
 
 const AddressStep = ({
   formData,
@@ -36,7 +37,7 @@ const AddressStep = ({
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-lg w-[420px] max-h-[90vh] flex flex-col relative">
               <button onClick={() => setShowAddressModal(false)} className="absolute top-3 right-3">
-                <X className="w-5 h-5" />
+                <CloseIcon className="w-5 h-5" />
               </button>
               <div className="p-6 pb-3 border-b">
                 <h2 className="text-lg font-semibold">Select Delivery Address</h2>
