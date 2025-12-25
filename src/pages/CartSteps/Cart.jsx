@@ -15,10 +15,10 @@ const ShoppingCartStep = ({
   handleIncreaseQuantity,
   handleDecreaseQuantity,
   handleRemoveProduct,
-  handleAddToWishlist = () => {}
+  handleAddToWishlist = () => { }
 }) => {
   const totalItems = products.length;
-
+  console.log("CartStep loaded");
   const calculateTotals = () => {
     let totalMRP = 0, totalDiscount = 0, totalPrice = 0;
     products.forEach((item) => {
