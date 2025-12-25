@@ -1345,6 +1345,7 @@ const BuyNow = () => {
   const { address } = useSelector((state) => state.address.address);
   const addressData = address?.address;
   const { coupon, loading } = useSelector((state) => state.coupon.coupon);
+  console.log(coupon, "coupon");
   const order = useSelector((state) => state.order.order);
 
   const [currentStep, setCurrentStep] = useState(1);
