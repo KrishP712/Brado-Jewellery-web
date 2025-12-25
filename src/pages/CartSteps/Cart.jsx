@@ -1,4 +1,3 @@
-// src/components/checkout/ShoppingCartStep.jsx
 import React from 'react';
 import {
   Plus, Minus, ArrowLeft, ChevronRight, BadgePercent
