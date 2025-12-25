@@ -1313,258 +1313,258 @@
 
 
 
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+// import React, { useState, useEffect } from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { useNavigate } from 'react-router-dom';
 
-import {
-  getCartData,
-  increaseCartQuantity,
-  decreaseCartQuantity,
-  removeCartData
-} from '../../redux/slices/cart';
-import { createOrder, getorderbyorderidData } from '../../redux/slices/order';
-import { addToWishlist } from '../../redux/slices/wishlist';
-import { getCouponData } from '../../redux/slices/coupon';
-import { getAddressData, createAddressData } from '../../redux/slices/address';
+// import {
+//   getCartData,
+//   increaseCartQuantity,
+//   decreaseCartQuantity,
+//   removeCartData
+// } from '../../redux/slices/cart';
+// import { createOrder, getorderbyorderidData } from '../../redux/slices/order';
+// import { addToWishlist } from '../../redux/slices/wishlist';
+// import { getCouponData } from '../../redux/slices/coupon';
+// import { getAddressData, createAddressData } from '../../redux/slices/address';
 
-import StepIndicator from '../CartSteps/StepIndicator';
-import CouponModal from '../CartSteps/CouponModal';
-import ShoppingCartStep from '../CartSteps/ShoppingCartStep';
-import AddressStep from '../CartSteps/AddressStep';
-import PaymentStep from '../CartSteps/PaymentStep';
-import CompleteStep from '../CartSteps/CompleteStep';
+// import StepIndicator from '../CartSteps/StepIndicator';
+// import CouponModal from '../CartSteps/CouponModal';
+// import ShoppingCartStep from '../CartSteps/ShoppingCartStep';
+// import AddressStep from '../CartSteps/AddressStep';
+// import PaymentStep from '../CartSteps/PaymentStep';
+// import CompleteStep from '../CartSteps/CompleteStep';
 
-import { Home } from 'lucide-react';
+// import { Home } from 'lucide-react';
 
-const BuyNow = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+// const BuyNow = () => {
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
 
-  const { cart, status } = useSelector((state) => state.cart);
-  const { address } = useSelector((state) => state.address.address);
-  const addressData = address?.address;
-  const { coupon, loading } = useSelector((state) => state.coupon.coupon);
-  const order = useSelector((state) => state.order.order);
+//   const { cart, status } = useSelector((state) => state.cart);
+//   const { address } = useSelector((state) => state.address.address);
+//   const addressData = address?.address;
+//   const { coupon, loading } = useSelector((state) => state.coupon.coupon);
+//   const order = useSelector((state) => state.order.order);
 
-  const [currentStep, setCurrentStep] = useState(1);
-  const [showCouponModal, setShowCouponModal] = useState(false);
-  const [showAddressModal, setShowAddressModal] = useState(false);
-  const [couponcode, setCouponcode] = useState('');
-  const [selectedCouponId, setSelectedCouponId] = useState(null);
-  const [selectedAddress, setSelectedAddress] = useState(null);
-  const [errors, setErrors] = useState({});
+//   const [currentStep, setCurrentStep] = useState(1);
+//   const [showCouponModal, setShowCouponModal] = useState(false);
+//   const [showAddressModal, setShowAddressModal] = useState(false);
+//   const [couponcode, setCouponcode] = useState('');
+//   const [selectedCouponId, setSelectedCouponId] = useState(null);
+//   const [selectedAddress, setSelectedAddress] = useState(null);
+//   const [errors, setErrors] = useState({});
 
-  const [formData, setFormData] = useState({
-    contactName: '', email: '', contactNo: '', addressLine1: '', addressLine2: '',
-    landmark: '', city: '', state: '', pinCode: '',
-    billingName: '', billingAddress1: '', billingAddress2: '', billingCity: '',
-    billingState: '', billingPin: '', sameAddress: true, addStatutory: false,
-    companyName: '', gstNo: ''
-  });
+//   const [formData, setFormData] = useState({
+//     contactName: '', email: '', contactNo: '', addressLine1: '', addressLine2: '',
+//     landmark: '', city: '', state: '', pinCode: '',
+//     billingName: '', billingAddress1: '', billingAddress2: '', billingCity: '',
+//     billingState: '', billingPin: '', sameAddress: true, addStatutory: false,
+//     companyName: '', gstNo: ''
+//   });
 
-  const cartData = cart[0] || {};
-  const products = cartData?.products || [];
+//   const cartData = cart[0] || {};
+//   const products = cartData?.products || [];
 
-  // Effects
-  useEffect(() => {
-    dispatch(couponcode ? getCartData(couponcode) : getCartData());
-  }, [dispatch, couponcode]);
+//   // Effects
+//   useEffect(() => {
+//     dispatch(couponcode ? getCartData(couponcode) : getCartData());
+//   }, [dispatch, couponcode]);
 
-  useEffect(() => {
-    if (showCouponModal) dispatch(getCouponData());
-  }, [showCouponModal, dispatch]);
+//   useEffect(() => {
+//     if (showCouponModal) dispatch(getCouponData());
+//   }, [showCouponModal, dispatch]);
 
-  useEffect(() => {
-    if (showAddressModal) dispatch(getAddressData());
-  }, [showAddressModal, dispatch]);
+//   useEffect(() => {
+//     if (showAddressModal) dispatch(getAddressData());
+//   }, [showAddressModal, dispatch]);
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
+//   const handleInputChange = (e) => {
+//     const { name, value, type, checked } = e.target;
+//     setFormData(prev => ({
+//       ...prev,
+//       [name]: type === 'checkbox' ? checked : value
+//     }));
+//   };
 
-  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 4));
-  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+//   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 4));
+//   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
-  const handleApplyCoupon = (code) => {
-    if (code.trim()) {
-      setCouponcode(code);
-    }
-  };
+//   const handleApplyCoupon = (code) => {
+//     if (code.trim()) {
+//       setCouponcode(code);
+//     }
+//   };
 
-  const handleSelectCoupon = (couponId) => {
-    const selected = coupon.find(c => c._id === couponId);
-    if (selected) {
-      setCouponcode(selected.code);
-      setSelectedCouponId(selected._id);
-      handleApplyCoupon(selected.code);
-      setShowCouponModal(false);
-    }
-  };
+//   const handleSelectCoupon = (couponId) => {
+//     const selected = coupon.find(c => c._id === couponId);
+//     if (selected) {
+//       setCouponcode(selected.code);
+//       setSelectedCouponId(selected._id);
+//       handleApplyCoupon(selected.code);
+//       setShowCouponModal(false);
+//     }
+//   };
 
-  const handleApplyAddress = (address) => {
-    if (!address) return;
-    setFormData(prev => ({
-      ...prev,
-      contactName: address.name || '',
-      contactNo: address.contactno || '',
-      addressLine1: address.address1 || '',
-      addressLine2: address.address2 || '',
-      landmark: address.landmark || '',
-      city: address.city || '',
-      state: address.state || '',
-      pinCode: address.pincode || '',
-    }));
-    setSelectedAddress(address);
-    setShowAddressModal(false);
-  };
+//   const handleApplyAddress = (address) => {
+//     if (!address) return;
+//     setFormData(prev => ({
+//       ...prev,
+//       contactName: address.name || '',
+//       contactNo: address.contactno || '',
+//       addressLine1: address.address1 || '',
+//       addressLine2: address.address2 || '',
+//       landmark: address.landmark || '',
+//       city: address.city || '',
+//       state: address.state || '',
+//       pinCode: address.pincode || '',
+//     }));
+//     setSelectedAddress(address);
+//     setShowAddressModal(false);
+//   };
 
-  const handleNextStep = async () => {
-    if (selectedAddress?._id) {
-      nextStep();
-      return;
-    }
+//   const handleNextStep = async () => {
+//     if (selectedAddress?._id) {
+//       nextStep();
+//       return;
+//     }
 
-    const payload = {
-      name: formData.contactName,
-      contactno: formData.contactNo,
-      email: formData.email,
-      address1: formData.addressLine1,
-      address2: formData.addressLine2,
-      landmark: formData.landmark,
-      city: formData.city,
-      state: formData.state,
-      pincode: formData.pinCode,
-      country: "India",
-    };
+//     const payload = {
+//       name: formData.contactName,
+//       contactno: formData.contactNo,
+//       email: formData.email,
+//       address1: formData.addressLine1,
+//       address2: formData.addressLine2,
+//       landmark: formData.landmark,
+//       city: formData.city,
+//       state: formData.state,
+//       pincode: formData.pinCode,
+//       country: "India",
+//     };
 
-    try {
-      await dispatch(createAddressData(payload)).unwrap();
-      nextStep();
-    } catch (err) {
-      console.log("Address creation failed");
-    }
-  };
+//     try {
+//       await dispatch(createAddressData(payload)).unwrap();
+//       nextStep();
+//     } catch (err) {
+//       console.log("Address creation failed");
+//     }
+//   };
 
-  const handleOrder = async () => {
-    if (!cartData?.products?.length) {
-      alert("Cart is empty!");
-      return;
-    }
+//   const handleOrder = async () => {
+//     if (!cartData?.products?.length) {
+//       alert("Cart is empty!");
+//       return;
+//     }
 
-    const orderPayload = {
-      items: cartData.products.map(p => ({
-        productId: p.productId,
-        title: p.title,
-        sku: p.sku,
-        slug: p.slug,
-        quantity: p.quantity,
-        price: p.price,
-        originalPrice: p.originalPrice,
-        discount: p.discount || 0,
-        totalPrice: p.itemPrice
-      })),
-      subtotal: cartData.total_product_price || cartData.products.reduce((acc, p) => acc + (p.itemPrice || p.price * p.quantity), 0),
-      shippingFee: 50,
-      couponcode: selectedCouponId,
-      couponDiscount: cartData.coupon_discount || 0,
-      totalAmount: (cartData.total_amount || cartData.products.reduce((acc, p) => acc + (p.itemPrice || p.price * p.quantity), 0)) + 50 - (cartData.coupon_discount || 0),
-      paymentMethod: "COD",
-      shippingAddress: {
-        contactPersonName: formData.contactName,
-        contactNo: formData.contactNo,
-        address: formData.addressLine1,
-        address2: formData.addressLine2,
-        landmark: formData.landmark,
-        city: formData.city,
-        state: formData.state,
-        pincode: formData.pinCode,
-      },
-      billingAddress: { /* same as shipping if sameAddress */ },
-      isBillingAddressSame: formData.sameAddress,
-    };
+//     const orderPayload = {
+//       items: cartData.products.map(p => ({
+//         productId: p.productId,
+//         title: p.title,
+//         sku: p.sku,
+//         slug: p.slug,
+//         quantity: p.quantity,
+//         price: p.price,
+//         originalPrice: p.originalPrice,
+//         discount: p.discount || 0,
+//         totalPrice: p.itemPrice
+//       })),
+//       subtotal: cartData.total_product_price || cartData.products.reduce((acc, p) => acc + (p.itemPrice || p.price * p.quantity), 0),
+//       shippingFee: 50,
+//       couponcode: selectedCouponId,
+//       couponDiscount: cartData.coupon_discount || 0,
+//       totalAmount: (cartData.total_amount || cartData.products.reduce((acc, p) => acc + (p.itemPrice || p.price * p.quantity), 0)) + 50 - (cartData.coupon_discount || 0),
+//       paymentMethod: "COD",
+//       shippingAddress: {
+//         contactPersonName: formData.contactName,
+//         contactNo: formData.contactNo,
+//         address: formData.addressLine1,
+//         address2: formData.addressLine2,
+//         landmark: formData.landmark,
+//         city: formData.city,
+//         state: formData.state,
+//         pincode: formData.pinCode,
+//       },
+//       billingAddress: { /* same as shipping if sameAddress */ },
+//       isBillingAddressSame: formData.sameAddress,
+//     };
 
-    const result = await dispatch(createOrder(orderPayload));
-    const orderId = result?.payload?.order?.orderId;
-    if (orderId) {
-      dispatch(getorderbyorderidData(orderId));
-      nextStep();
-    }
-  };
+//     const result = await dispatch(createOrder(orderPayload));
+//     const orderId = result?.payload?.order?.orderId;
+//     if (orderId) {
+//       dispatch(getorderbyorderidData(orderId));
+//       nextStep();
+//     }
+//   };
 
-  const sharedProps = {
-    cartData,
-    products,
-    couponcode,
-    selectedCouponId,
-    formData,
-    handleInputChange,
-    selectedAddress,
-    setSelectedAddress,
-    showAddressModal,
-    setShowAddressModal,
-    addressData,
-    handleApplyAddress,
-    coupon,
-    loading,
-    showCouponModal,
-    setShowCouponModal,
-    handleApplyCoupon,
-    handleSelectCoupon,
-    status,
-    dispatch,
-    navigate,
-    nextStep,
-    prevStep,
-    handleNextStep,
-    handleOrder,
-    order,
-  };
+//   const sharedProps = {
+//     cartData,
+//     products,
+//     couponcode,
+//     selectedCouponId,
+//     formData,
+//     handleInputChange,
+//     selectedAddress,
+//     setSelectedAddress,
+//     showAddressModal,
+//     setShowAddressModal,
+//     addressData,
+//     handleApplyAddress,
+//     coupon,
+//     loading,
+//     showCouponModal,
+//     setShowCouponModal,
+//     handleApplyCoupon,
+//     handleSelectCoupon,
+//     status,
+//     dispatch,
+//     navigate,
+//     nextStep,
+//     prevStep,
+//     handleNextStep,
+//     handleOrder,
+//     order,
+//   };
 
-  const renderStep = () => {
-    switch (currentStep) {
-      case 1: return <ShoppingCartStep {...sharedProps} />;
-      case 2: return <AddressStep {...sharedProps} errors={errors} setErrors={setErrors} />;
-      case 3: return <PaymentStep {...sharedProps} />;
-      case 4: return <CompleteStep {...sharedProps} />;
-      default: return <ShoppingCartStep {...sharedProps} />;
-    }
-  };
+//   const renderStep = () => {
+//     switch (currentStep) {
+//       case 1: return <ShoppingCartStep {...sharedProps} />;
+//       case 2: return <AddressStep {...sharedProps} errors={errors} setErrors={setErrors} />;
+//       case 3: return <PaymentStep {...sharedProps} />;
+//       case 4: return <CompleteStep {...sharedProps} />;
+//       default: return <ShoppingCartStep {...sharedProps} />;
+//     }
+//   };
 
-  return (
-    <div className="min-h-screen">
-      <div className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Home className="w-4 h-4" />
-            <span>Home</span>
-            <span> / </span>
-            <span>Shopping Cart</span>
-          </div>
-        </div>
-      </div>
+//   return (
+//     <div className="min-h-screen">
+//       <div className="bg-white shadow-sm">
+//         <div className="container mx-auto px-4 py-4">
+//           <div className="flex items-center gap-2 text-sm text-gray-600">
+//             <Home className="w-4 h-4" />
+//             <span>Home</span>
+//             <span> / </span>
+//             <span>Shopping Cart</span>
+//           </div>
+//         </div>
+//       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <StepIndicator currentStep={currentStep} />
-        {renderStep()}
-      </div>
+//       <div className="container mx-auto px-4 py-8">
+//         <StepIndicator currentStep={currentStep} />
+//         {renderStep()}
+//       </div>
 
-      <CouponModal
-        open={showCouponModal}
-        onClose={() => setShowCouponModal(false)}
-        couponcode={couponcode}
-        setCouponcode={setCouponcode}
-        handleApplyCoupon={handleApplyCoupon}
-        handleSelectCoupon={handleSelectCoupon}
-        coupon={coupon}
-        loading={loading}
-      />
-    </div>
-  );
-};
+//       <CouponModal
+//         open={showCouponModal}
+//         onClose={() => setShowCouponModal(false)}
+//         couponcode={couponcode}
+//         setCouponcode={setCouponcode}
+//         handleApplyCoupon={handleApplyCoupon}
+//         handleSelectCoupon={handleSelectCoupon}
+//         coupon={coupon}
+//         loading={loading}
+//       />
+//     </div>
+//   );
+// };
 
-export default BuyNow;
+// export default BuyNow;
