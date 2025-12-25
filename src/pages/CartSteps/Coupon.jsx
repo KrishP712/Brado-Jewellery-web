@@ -1,4 +1,3 @@
-// src/components/checkout/CouponModal.jsx
 import React from 'react';
 import { X, BadgePercent } from 'lucide-react';
 
