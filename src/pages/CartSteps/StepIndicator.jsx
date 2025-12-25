@@ -12,11 +12,11 @@ const StepIndicator = ({ currentStep }) => (
   <div className="my-4 bg-white">
     <div className="relative flex justify-between items-start max-w-3xl mx-auto">
       <div
-        className="absolute top-[26%] h-[2px] bg-[#f4f3ef]"
+        className="absolute top-[26%] h-0.5 bg-[#f4f3ef]"
         style={{ left: "24px", right: "24px" }}
       />
       <div
-        className="absolute top-6 h-[2px] bg-[#b4853e] transition-all duration-300"
+        className="absolute top-6 h-0.5 bg-[#b4853e] transition-all duration-300"
         style={{
           left: "33px",
           top: "26%",

@@ -50,7 +50,7 @@ const ShoppingCartStep = ({
     <div className="grid lg:grid-cols-3 gap-8 w-[90%] mx-auto">
       <div className="lg:col-span-2">
         <h2 className="mb-6 text-[23px]">
-          Shopping Cart <span className="text-[#b4853e] text-[14px] ml-[10px]">{totalItems} Items</span>
+          Shopping Cart <span className="text-[#b4853e] text-[14px] ml-2.5">{totalItems} Items</span>
         </h2>
 
         {products.map((item) => (
@@ -91,7 +91,7 @@ const ShoppingCartStep = ({
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="flex border border-gray-200 p-[2px] rounded">
+                  <div className="flex border border-gray-200 p-0.5 rounded">
                     <button onClick={() => handleDecreaseQuantity(item.productId)} disabled={item.quantity <= 1}
                       className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50">
                       <Minus className="w-4 h-4" />
