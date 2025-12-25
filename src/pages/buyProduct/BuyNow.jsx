@@ -1408,7 +1408,8 @@ const BuyNow = () => {
   const totals = calculateTotals();
   const totalItems = products.length;
 
-  const couponDiscount = couponData?.find((coupon) => coupon._id === selectedCouponId)?.discount || 0;
+  const couponDiscount = coupon?.find((coupon) => coupon._id === selectedCouponId)?.discount || 0;
+  console.log(couponDiscount, "couponDiscount");
   // Effects
   useEffect(() => {
     dispatch(couponcode ? getCartData(couponcode) : getCartData());
