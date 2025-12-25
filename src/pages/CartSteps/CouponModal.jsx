@@ -50,7 +50,6 @@ const CouponModal = ({
             <div className="space-y-3">
               {couponData?.filter((c) => c.isactive === true)
               .map((c) => (
-                console.log(c, "c"),
                 <div
                   key={c._id}
                   onClick={() => handleSelectCoupon(c._id)}

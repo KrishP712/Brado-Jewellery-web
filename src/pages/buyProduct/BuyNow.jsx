@@ -1441,7 +1441,7 @@ const BuyNow = () => {
   };
 
   const handleSelectCoupon = (couponId) => {
-    const selected = coupon.find(c => c._id === couponId);
+    const selected = couponData.find(c => c._id === couponId);
     if (selected) {
       setCouponcode(selected.code);
       setSelectedCouponId(selected._id);
@@ -1611,7 +1611,7 @@ const BuyNow = () => {
         setCouponcode={setCouponcode}
         handleApplyCoupon={handleApplyCoupon}
         handleSelectCoupon={handleSelectCoupon}
-        coupon={coupon}
+        coupon={couponData}
         loading={loading}
       />
     </div>
