@@ -149,10 +149,24 @@ const cartSlice = createSlice({
                 state.operationStatus = 'loading';
             })
             .addCase(increaseCartQuantity.fulfilled, (state, action) => {
-                const item = state.cart[0].products.find(
+                const cart = state.cart?.[0];
+                if (!cart) return;
+
+                const item = cart.products.find(
                     (p) => String(p.productId) === String(action.payload.productId)
                 );
-                if (item) item.quantity += 1;
+                if (!item) return;
+
+                // increase quantity
+                item.quantity += 1;
+
+                // update item total
+                item.itemTotal = item.quantity * item.price;
+
+                // update cart totals
+                cart.total_amount += item.price;
+                cart.total_mrp_amount += item.originalPrice || item.price;
+                cart.total_sale_discount = cart.total_mrp_amount - cart.total_amount;
             })
 
             .addCase(increaseCartQuantity.rejected, (state, action) => {
@@ -164,10 +178,24 @@ const cartSlice = createSlice({
                 state.operationStatus = 'loading';
             })
             .addCase(decreaseCartQuantity.fulfilled, (state, action) => {
-                const item = state.cart[0].products.find(
+                const cart = state.cart?.[0];
+                if (!cart) return;
+
+                const item = cart.products.find(
                     (p) => String(p.productId) === String(action.payload.productId)
                 );
-                if (item) item.quantity -= 1;
+                if (!item || item.quantity <= 1) return;
+
+                // decrease quantity
+                item.quantity -= 1;
+
+                // update item total
+                item.itemTotal = item.quantity * item.price;
+
+                // update cart totals
+                cart.total_amount -= item.price;
+                cart.total_mrp_amount -= item.originalPrice || item.price;
+                cart.total_sale_discount = cart.total_mrp_amount - cart.total_amount;
             })
             .addCase(decreaseCartQuantity.rejected, (state, action) => {
                 state.operationStatus = 'failed';
