@@ -1611,7 +1611,7 @@ const BuyNow = () => {
         setCouponcode={setCouponcode}
         handleApplyCoupon={handleApplyCoupon}
         handleSelectCoupon={handleSelectCoupon}
-        coupon={couponData}
+        couponData={couponData}
         loading={loading}
       />
     </div>
