@@ -1555,7 +1555,7 @@ const BuyNow = () => {
     setShowAddressModal,
     addressData,
     handleApplyAddress,
-    coupon,
+    couponData,
     loading,
     showCouponModal,
     setShowCouponModal,
