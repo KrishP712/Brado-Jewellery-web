@@ -7,7 +7,6 @@ export const getCouponData = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`${API_URL}/all`);
-      console.log(response , "response");
       return response; 
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch  data');

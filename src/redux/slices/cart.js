@@ -11,7 +11,6 @@ export const getCartData = createAsyncThunk(
             const response = await axiosInstance.get(
                 couponcode ? `${API_URL}/all?couponcode=${couponcode}` : `${API_URL}/all`
             );
-            console.log(response);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data);
@@ -31,7 +30,6 @@ export const createCartData = createAsyncThunk(
                 pauseOnHover: true,
                 transition: Flip,
             });
-            console.log(response);
             if (response?.success) {
                 dispatch(getCartData());
             }
