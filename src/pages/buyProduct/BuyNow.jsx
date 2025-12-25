@@ -1324,7 +1324,7 @@ import {
   removeCartData
 } from '../../redux/slices/cart';
 import { createOrder, getorderbyorderidData } from '../../redux/slices/order';
-import { addToWishlist } from '../../redux/slices/wishlist';
+import { addToWishlist, } from '../../redux/slices/wishlist';
 import { getCouponData } from '../../redux/slices/coupon';
 import { getAddressData, createAddressData } from '../../redux/slices/address';
 
@@ -1365,6 +1365,23 @@ const BuyNow = () => {
 
   const cartData = cart[0] || {};
   const products = cartData?.products || [];
+
+  const handleIncreaseQuantity = (productId) => {
+    dispatch(increaseCartQuantity(productId));
+  };
+
+  const handleDecreaseQuantity = (productId) => {
+    dispatch(decreaseCartQuantity(productId));
+  };
+
+  const handleRemoveProduct = (productId) => {
+    dispatch(removeCartData(productId));
+  };
+
+  const handleAddToWishlist = (productId) => {
+    dispatch(addToWishlist(productId));
+  };
+
   const calculateTotals = () => {
     let totalMRP = 0;
     let totalDiscount = 0;
@@ -1465,6 +1482,7 @@ const BuyNow = () => {
       country: "India",
     };
 
+
     try {
       await dispatch(createAddressData(payload)).unwrap();
       nextStep();
@@ -1547,6 +1565,10 @@ const BuyNow = () => {
     handleOrder,
     order,
     totals,
+    handleIncreaseQuantity,
+    handleDecreaseQuantity,
+    handleRemoveProduct,
+    handleAddToWishlist,
     totalItems,
   };
 
