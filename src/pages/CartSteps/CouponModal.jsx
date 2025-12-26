@@ -12,7 +12,17 @@ const CouponModal = ({
   loading
 }) => {
   if (!open) return null;
-  console.log(couponData, "couponData");  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const validCoupons = couponData?.filter((c) => {
+    if (!c.isactive) return false;
+
+    if (!c.enddate) return true;
+
+    const couponEndDate = new Date(c.enddate);
+    return couponEndDate >= today;
+  });
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-lg" onClick={(e) => e.stopPropagation()}>
@@ -45,16 +55,45 @@ const CouponModal = ({
 
         <div className="mt-4">
           {loading ? (
-            <p className="text-center text-gray-500">Loading coupons...</p>
-          ) : couponData?.filter((c) => c.isactive === true)?.length > 0 ? (
-            <div className="space-y-3">
-              {couponData?.filter((c) => c.isactive === true)
-              .map((c) => (
+            <p className="text-center text-gray-500 py-8">Loading coupons...</p>
+          ) : validCoupons && validCoupons.length > 0 ? (
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {validCoupons.map((c) => (
                 <div
                   key={c._id}
                   onClick={() => handleSelectCoupon(c._id)}
-                  className="border border-amber-400 rounded-lg p-3 hover:bg-amber-50 transition-all cursor-pointer"
+                  className="border border-amber-400 rounded-lg p-4 hover:bg-amber-50 transition-all cursor-pointer shadow-sm hover:shadow"
                 >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="font-bold text-amber-700 text-lg">{c.code}</p>
+                      <p className="text-sm text-gray-700 mt-1">
+                        {c.discountType === "percentage"
+                          ? `${c.discountpercentageValue}% OFF`
+                          : `₹${c.discountfixedValue} OFF`}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Min order: ₹{c.minorderamount}
+                      </p>
+                      {c.enddate && (
+                        <p className="text-xs text-gray-400 mt-2">
+                          Valid till: {new Date(c.enddate).toLocaleDateString('en-IN')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : couponData?.filter((c) => c.)?.length > 0 ? (
+            <div className="space-y-3">
+              {couponData?.filter((c) => c.isactive)
+                .map((c) => (
+                  <div
+                    key={c._id}
+                    onClick={() => handleSelectCoupon(c._id)}
+                    className="border border-amber-400 rounded-lg p-3 hover:bg-amber-50 transition-all cursor-pointer"
+                  >
                     <p className="font-semibold text-amber-600">{c.code}</p>
                     <p className="text-sm text-gray-600">
                       {c.discountType === "percentage"
