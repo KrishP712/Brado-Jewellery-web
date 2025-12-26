@@ -18,7 +18,8 @@ const AddressStep = ({
   cartData,
   products,
   totalItems,
-  dispatch
+  dispatch,
+  getAddressData
 }) => {
   const [localErrors, setLocalErrors] = useState({});
 
