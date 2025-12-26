@@ -210,7 +210,8 @@ export default function ShowProduct() {
   const navigationNextRef = useRef(null);
   const containerRef = useRef(null);
   const imageRef = useRef(null);
-
+  const mainSwiperRef = useRef(null);
+  const thumbsSwiperRef = useRef(null);
   const OfferBanner = () => {
     return (
       <>
@@ -366,8 +367,6 @@ export default function ShowProduct() {
   const productImages = product?.[0]?.imagesUrl || (product.image ? [product.image] : []);
   const productUrl = window.location.href;
 
-  const mainSwiperRef = useRef(null);
-  const thumbsSwiperRef = useRef(null);
 
   useEffect(() => {
     const swiper = thumbsSwiperRef.current;
