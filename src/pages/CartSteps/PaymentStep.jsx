@@ -5,11 +5,11 @@ import { ArrowLeft } from 'lucide-react';
 const PaymentStep = ({ cartData, products, handleOrder, prevStep }) => {
   const totalItems = products?.length || 0;
 
-  // Fixed charges as per your design
-  const SHIPPING_FEE = 70;   // General Shipping
-  const COD_CHARGE = 55;    // Extra charge for COD
+  // Charges exactly as in your screenshot
+  const SHIPPING_FEE = 70;
+  const COD_CHARGE = 55;
 
-  // Safely calculate MRP and discount from products
+  // Calculate MRP and Discount from products
   const calculateTotals = () => {
     if (!Array.isArray(products) || products.length === 0) {
       return { totalMRP: 0, totalDiscount: 0, subtotal: 0 };
@@ -20,166 +20,156 @@ const PaymentStep = ({ cartData, products, handleOrder, prevStep }) => {
 
     products.forEach((item) => {
       const qty = item.quantity || 1;
-      const originalPrice = item.originalPrice || item.price || 0; // MRP
-      const discountedPrice = item.price || 0;                     // After product discount
+      const originalPrice = item.originalPrice || item.price || 0;
+      const price = item.price || 0;
 
       totalMRP += originalPrice * qty;
-      totalPrice += discountedPrice * qty;
+      totalPrice += price * qty;
     });
 
     const totalDiscount = totalMRP - totalPrice;
 
     return {
-      totalMRP: totalMRP.toFixed(2),
-      totalDiscount: totalDiscount.toFixed(2),
-      subtotal: totalPrice.toFixed(2),
+      totalMRP: totalMRP.toFixed(0), // No decimals like in SS (464)
+      totalDiscount: totalDiscount.toFixed(0), // 232
+      subtotal: totalPrice.toFixed(0),
     };
   };
 
-  const { totalMRP, totalDiscount, subtotal } = calculateTotals();
+  const { totalMRP, totalDiscount } = calculateTotals();
 
-  // Payment method selection
-  const [paymentMethod, setPaymentMethod] = useState('PREPAID'); // Default: Online Payment
+  // Payment method state (default Online)
+  const [paymentMethod, setPaymentMethod] = useState('online');
 
-  // Final total based on selected payment method
-  const finalTotal =
-    paymentMethod === 'COD'
-      ? parseFloat(subtotal) + SHIPPING_FEE + COD_CHARGE
-      : parseFloat(subtotal) + SHIPPING_FEE;
+  // Final total
+  const finalTotal = paymentMethod === 'cod'
+    ? (parseFloat(totalMRP) - parseFloat(totalDiscount) + SHIPPING_FEE + COD_CHARGE)
+    : (parseFloat(totalMRP) - parseFloat(totalDiscount) + SHIPPING_FEE);
 
-  // Trigger order placement with selected payment method
   const placeOrder = () => {
-    handleOrder(paymentMethod);
+    // Pass 'COD' or 'PREPAID' to your handleOrder if needed
+    handleOrder(paymentMethod === 'cod' ? 'COD' : 'PREPAID');
   };
 
   return (
-    <div className="grid lg:grid-cols-3 gap-8 w-[90%] mx-auto max-w-7xl">
-      {/* Left Section: Shipping & Payment Methods */}
-      <div className="lg:col-span-2 space-y-12">
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="grid lg:grid-cols-3 gap-8">
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-8">
 
-        {/* Shipping Method */}
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Shipping Method</h2>
-          <div className="bg-white border border-gray-200 rounded-lg p-6 flex items-center justify-between shadow-sm hover:shadow transition-shadow">
-            <label className="flex items-center cursor-pointer flex-1">
-              <input
-                type="radio"
-                name="shipping"
-                checked
-                readOnly
-                className="w-5 h-5 text-[#b4853e] accent-[#b4853e] mr-5"
-              />
-              <div>
-                <p className="font-semibold text-gray-900">General Shipping</p>
-                <p className="text-sm text-gray-600 mt-1">3-5 Days Delivery</p>
-              </div>
-            </label>
-            <span className="text-xl font-bold text-gray-900">₹{SHIPPING_FEE}</span>
-          </div>
-        </div>
-
-        {/* Payment Method */}
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Payment Method</h2>
-          <div className="space-y-5">
-
-            {/* Online Payment */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow transition-shadow">
-              <label className="flex items-start cursor-pointer">
+          {/* Shipping Method */}
+          <div>
+            <h2 className="text-2xl font-semibold mb-6">Shipping Method</h2>
+            <div className="bg-gray-50 border border-gray-300 rounded-lg p-5 flex items-center justify-between">
+              <label className="flex items-center cursor-pointer">
                 <input
                   type="radio"
-                  name="payment"
-                  value="PREPAID"
-                  checked={paymentMethod === 'PREPAID'}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-5 h-5 text-[#b4853e] accent-[#b4853e] mt-1 mr-5"
+                  name="shipping"
+                  checked
+                  readOnly
+                  className="w-5 h-5 accent-[#b4853e] mr-4"
                 />
-                <div className="flex-1">
-                  <p className="font-semibold text-gray-900">Online Payment</p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Pay using Credit card, Debit card, UPI
-                  </p>
+                <div>
+                  <p className="font-medium">General Shipping</p>
+                  <p className="text-sm text-gray-600">3-5 Days Delivery</p>
                 </div>
               </label>
+              <span className="font-semibold">₹70</span>
             </div>
+          </div>
 
-            {/* Cash on Delivery */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow transition-shadow">
-              <label className="flex items-start justify-between cursor-pointer w-full">
-                <div className="flex items-start">
+          {/* Payment Method */}
+          <div>
+            <h2 className="text-2xl font-semibold mb-6">Payment Method</h2>
+            <div className="space-y-4">
+
+              {/* Online Payment */}
+              <div className="bg-white border border-gray-300 rounded-lg p-5">
+                <label className="flex items-center cursor-pointer">
                   <input
                     type="radio"
                     name="payment"
-                    value="COD"
-                    checked={paymentMethod === 'COD'}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-5 h-5 text-[#b4853e] accent-[#b4853e] mt-1 mr-5"
+                    checked={paymentMethod === 'online'}
+                    onChange={() => setPaymentMethod('online')}
+                    className="w-5 h-5 accent-[#b4853e] mr-4"
                   />
                   <div>
-                    <p className="font-semibold text-gray-900">Cash on Delivery</p>
-                    <p className="text-sm text-gray-600 mt-1">Pay at door steps</p>
+                    <p className="font-medium">Online Payment</p>
+                    <p className="text-sm text-gray-600">Pay using Credit card, Debit card, UPI</p>
                   </div>
-                </div>
-                <span className="text-xl font-bold text-gray-900">₹{COD_CHARGE}</span>
-              </label>
+                </label>
+              </div>
+
+              {/* Cash on Delivery */}
+              <div className="bg-white border border-gray-300 rounded-lg p-5 flex items-center justify-between">
+                <label className="flex items-center cursor-pointer flex-1">
+                  <input
+                    type="radio"
+                    name="payment"
+                    checked={paymentMethod === 'cod'}
+                    onChange={() => setPaymentMethod('cod')}
+                    className="w-5 h-5 accent-[#b4853e] mr-4"
+                  />
+                  <div>
+                    <p className="font-medium">Cash on Delivery</p>
+                    <p className="text-sm text-gray-600">Pay at door steps</p>
+                  </div>
+                </label>
+                <span className="font-semibold">₹55</span>
+              </div>
+
             </div>
-
           </div>
         </div>
-      </div>
 
-      {/* Right Section: Order Summary */}
-      <div className="bg-white rounded-lg p-8 shadow-lg border border-gray-100 h-fit">
-        <h3 className="text-xl font-semibold text-gray-900 mb-6">
-          Order Summary{' '}
-          <span className="text-sm font-normal text-gray-500">(items {totalItems})</span>
-        </h3>
+        {/* Right Column - Order Summary */}
+        <div className="bg-gray-50 p-6 rounded-lg h-fit">
+          <h3 className="font-semibold mb-4">
+            Order Summary (items {totalItems})
+          </h3>
 
-        <div className="space-y-4 mb-6">
-          <div className="flex justify-between text-base">
-            <span className="text-gray-600">Total MRP</span>
-            <span className="font-medium">₹{totalMRP}</span>
-          </div>
-
-          <div className="flex justify-between text-base text-green-600">
-            <span className="text-gray-600">Discount</span>
-            <span className="font-medium">-₹{totalDiscount}</span>
-          </div>
-
-          <div className="flex justify-between text-base">
-            <span className="text-gray-600">Shipping Charge</span>
-            <span className="font-medium">₹{SHIPPING_FEE}</span>
-          </div>
-
-          {paymentMethod === 'COD' && (
-            <div className="flex justify-between text-base">
-              <span className="text-gray-600">COD Charge</span>
-              <span className="font-medium">₹{COD_CHARGE}</span>
+          <div className="space-y-3 mb-4">
+            <div className="flex justify-between">
+              <span>Total MRP</span>
+              <span>₹{totalMRP}</span>
             </div>
-          )}
-        </div>
-
-        <div className="border-t border-gray-300 pt-6">
-          <div className="flex justify-between text-2xl font-bold text-gray-900 mb-2">
-            <span>Total</span>
-            <span>₹{finalTotal.toFixed(2)}</span>
+            <div className="flex justify-between text-green-600">
+              <span>Discount</span>
+              <span>-₹{totalDiscount}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Shipping Charge</span>
+              <span>₹70</span>
+            </div>
+            {paymentMethod === 'cod' && (
+              <div className="flex justify-between">
+                <span>COD Charge</span>
+                <span>₹55</span>
+              </div>
+            )}
           </div>
+
+          <div className="border-t border-gray-400 pt-4">
+            <div className="flex justify-between text-xl font-bold">
+              <span>Total</span>
+              <span>₹{finalTotal.toFixed(0)}</span>
+            </div>
+          </div>
+
+          <button
+            onClick={placeOrder}
+            className="w-full bg-[#b4853e] text-white py-3 rounded-lg mt-6 font-medium hover:bg-[#a0753a] transition"
+          >
+            Next to Pay
+          </button>
+
+          <button
+            onClick={prevStep}
+            className="w-full text-[#b4853e] flex items-center justify-center gap-2 mt-4 hover:underline"
+          >
+            ← Back
+          </button>
         </div>
-
-        <button
-          onClick={placeOrder}
-          className="w-full bg-[#b4853e] text-white py-4 rounded-lg mt-8 font-bold text-lg hover:bg-[#9a7437] transition-all duration-200 shadow-lg hover:shadow-xl"
-        >
-          Place Order
-        </button>
-
-        <button
-          onClick={prevStep}
-          className="w-full text-[#b4853e] flex items-center justify-center gap-3 py-4 mt-4 font-medium hover:underline"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back
-        </button>
       </div>
     </div>
   );

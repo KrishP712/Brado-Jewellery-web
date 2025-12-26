@@ -74,7 +74,7 @@ const AddressStep = ({
       errors.city = "City is required";
     }
 
-    if (!formData.pinCode.trim()) {
+    if (!formData.pinCode?.trim()) {
       errors.pinCode = "Pin code is required";
     } else if (!/^\d{6}$/.test(formData.pinCode)) {
       errors.pinCode = "Pin code must be 6 digits";
