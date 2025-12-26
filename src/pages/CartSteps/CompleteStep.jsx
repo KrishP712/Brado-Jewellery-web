@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom';
 
 const CompleteStep = ({ order, cartData, formData }) => {
   console.log(cartData);
+  console.log(order);
   const navigate = useNavigate();
-  const shippingCharge = cartData?.shippingFee || 70;
-  const codCharge = cartData?.codCharge || 55;
+  const shippingCharge =  70;
+  const codCharge = 55;
   const finalAmount = (parseFloat(cartData?.total_amount || 0) + shippingCharge + codCharge).toFixed(2);
 
   return (
@@ -20,7 +21,7 @@ const CompleteStep = ({ order, cartData, formData }) => {
             </div>
             <h2 className="text-[16px] font-medium mb-6">Order Placed Successfully</h2>
             <p className="text-[14px] mb-2 text-[#696661]">
-              Order No.: <span className="text-black">{order?.orderId || "N/A"}</span>
+              Order No.: <span className="text-black">{order?.orderId}</span>
             </p>
             <p className="text-[14px] text-[#696661]">
               Order Amount: <span className="text-black">₹{finalAmount}</span>
