@@ -1551,7 +1551,7 @@ const BuyNow = () => {
     console.log(result,"result");
     const orderId = result?.payload?.order?.orderId;
     if (orderId) {
-      dispatch(removeCartDataWithOutToast());
+      dispatch(removeCartDataWithOutToast(result.payload.order.items.map(item => item.productId._id)));
       dispatch(getOrderData());
       nextStep();
     }
