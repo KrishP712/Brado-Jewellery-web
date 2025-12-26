@@ -100,6 +100,20 @@ export const removeCartData = createAsyncThunk(
         }
     }
 );
+export const removeCartDataWithOutToast = createAsyncThunk(
+    'cart/removeCartDataWithOutToast',
+    async (productId, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await axiosInstance.delete(`${API_URL}/remove`, {
+                data: { productId },
+            });
+            dispatch(getCartData());
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data);
+        }
+    }
+);
 const cartSlice = createSlice({
     name: 'cart',
     initialState: {
@@ -207,6 +221,16 @@ const cartSlice = createSlice({
                 state.operationStatus = 'succeeded';
             })
             .addCase(removeCartData.rejected, (state, action) => {
+                state.operationStatus = 'failed';
+                state.error = action.payload;
+            })
+            .addCase(removeCartDataWithOutToast.pending, (state) => {
+                state.operationStatus = 'loading';
+            })
+            .addCase(removeCartDataWithOutToast.fulfilled, (state) => {
+                state.operationStatus = 'succeeded';
+            })
+            .addCase(removeCartDataWithOutToast.rejected, (state, action) => {
                 state.operationStatus = 'failed';
                 state.error = action.payload;
             });

@@ -1321,7 +1321,8 @@ import {
   getCartData,
   increaseCartQuantity,
   decreaseCartQuantity,
-  removeCartData
+  removeCartData,
+  removeCartDataWithOutToast,
 } from '../../redux/slices/cart';
 import { createOrder, getOrderData } from '../../redux/slices/order';
 import { addToWishlist, } from '../../redux/slices/wishlist';
@@ -1381,7 +1382,7 @@ const BuyNow = () => {
   const handleAddToWishlist = (productId) => {
     dispatch(addToWishlist(productId));
     if (status === 'succeeded') {
-      dispatch(removeCartData(productId));
+      dispatch(removeCartDataWithOutToast(productId));
     }
   };
 
@@ -1548,8 +1549,8 @@ const BuyNow = () => {
 
     const result = await dispatch(createOrder(orderPayload));
     const orderId = result?.payload?.order?.orderId;
-    console.log(orderId);
     if (orderId) {
+      dispatch(removeCartDataWithOutToast());
       dispatch(getOrderData());
       nextStep();
     }
