@@ -1,11 +1,9 @@
-// src/components/checkout/PaymentStep.jsx
+
 import React, { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
 
 const PaymentStep = ({ cartData, products, handleOrder, prevStep }) => {
   const totalItems = products?.length || 0;
 
-  // Charges as per your screenshot
   const SHIPPING_FEE = 70;
   const COD_CHARGE = 55;
 

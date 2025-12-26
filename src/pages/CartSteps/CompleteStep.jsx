@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 
 const CompleteStep = ({ order, cartData, formData }) => {
   const navigate = useNavigate();
-  const shippingCharge = cartData?.shippingFee || 50;
-  const codCharge = 25;
+  const shippingCharge = cartData?.shippingFee;
+  const codCharge = cartData?.codCharge;
   const finalAmount = (parseFloat(cartData?.total_amount || 0) + shippingCharge + codCharge).toFixed(2);
 
   return (
