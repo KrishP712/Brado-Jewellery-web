@@ -4,10 +4,15 @@ import { Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const CompleteStep = ({ order, cartData, formData }) => {
-  console.log(cartData);
-  console.log(order, "order");
+  const latestOrder = Array.isArray(order)
+    ? [...order].sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    )[0]
+    : null;
+    console.log(latestOrder);
+  if (!latestOrder) return null;
   const navigate = useNavigate();
-  const shippingCharge =  70;
+  const shippingCharge = 70;
   const codCharge = 55;
   const finalAmount = (parseFloat(cartData?.total_amount || 0) + shippingCharge + codCharge).toFixed(2);
 

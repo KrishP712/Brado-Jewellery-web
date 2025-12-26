@@ -1347,7 +1347,6 @@ const BuyNow = () => {
   const { coupon, loading } = useSelector((state) => state.coupon);
   const couponData = coupon?.coupons;
   const order = useSelector((state) => state.order.order);
-  console.log(order, "order");
   const [currentStep, setCurrentStep] = useState(1);
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
@@ -1531,7 +1530,16 @@ const BuyNow = () => {
         state: formData.state,
         pincode: formData.pinCode,
       },
-      billingAddress: { /* same as shipping if sameAddress */ },
+      billingAddress: formData.sameAddress ? {
+        contactPersonName: formData.contactName,
+        contactNo: formData.contactNo,
+        address: formData.addressLine1,
+        address2: formData.addressLine2,
+        landmark: formData.landmark,
+        city: formData.city,
+        state: formData.state,
+        pincode: formData.pinCode,
+      } : null,
       isBillingAddressSame: formData.sameAddress,
     };
 
