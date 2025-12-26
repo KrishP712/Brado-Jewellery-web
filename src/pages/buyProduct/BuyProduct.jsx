@@ -439,14 +439,11 @@ export default function ShowProduct() {
                 watchSlidesProgress={true}
                 modules={[FreeMode, Navigation, Thumbs]}
                 className="thumb-swiper"
-                navigation={{
-                  prevEl: navigationPrevRef.current,
-                  nextEl: navigationNextRef.current,
-                }}
                 onBeforeInit={(swiper) => {
                   swiper.params.navigation.prevEl = navigationPrevRef.current;
                   swiper.params.navigation.nextEl = navigationNextRef.current;
                 }}
+                navigation={true}
                 breakpoints={{
                   320: { slidesPerView: 4 },
                   640: { slidesPerView: 5 },
