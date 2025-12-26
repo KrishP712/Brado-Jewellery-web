@@ -1548,6 +1548,7 @@ const BuyNow = () => {
     };
 
     const result = await dispatch(createOrder(orderPayload));
+    console.log(result);
     const orderId = result?.payload?.order?.orderId;
     if (orderId) {
       dispatch(removeCartDataWithOutToast());
