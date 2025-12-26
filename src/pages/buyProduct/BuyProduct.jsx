@@ -1,3 +1,4 @@
+// src/pages/ShowProduct.jsx or src/components/ShowProduct.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Thumbs, FreeMode } from "swiper/modules";
@@ -20,7 +21,7 @@ import SettingsCogIcon from "../../assets/icons/SettingsCogIcon";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
-import 'swiper/css/pagination';
+import "swiper/css/pagination";
 
 // Arrow Component
 const Arrow = ({ className }) => (
@@ -91,7 +92,6 @@ const SpecialDealBanner = () => {
   );
 };
 
-
 // Social Icon Component
 const SocialIcon = ({ type, className }) => {
   const icons = {
@@ -146,6 +146,7 @@ const ShareModal = ({ isOpen, onClose, productUrl }) => {
   ];
 
   if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white p-6 w-full md:w-[40%] mx-4 rounded-sm">
@@ -180,18 +181,20 @@ const ShareModal = ({ isOpen, onClose, productUrl }) => {
   );
 };
 
-// Main Component
+// Main ShowProduct Component
 export default function ShowProduct() {
   const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Decode slug from URL
-  let slug = decodeURIComponent(params.slug);
+  let slug = decodeURIComponent(params.slug || '');
   slug = slug.trim();
+
   const { product, loading, error } = useSelector((state) => state.products);
   const { wishlist, loading: wishlistLoading } = useSelector((state) => state.wishlist);
+
   const productId = product?.[0]?._id;
+
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [expandedSections, setExpandedSections] = useState({
@@ -199,21 +202,10 @@ export default function ShowProduct() {
     refundPolicy: false,
     careInstructions: true,
   });
-  const [isBeginning, setIsBeginning] = useState(true);
-  const [isEnd, setIsEnd] = useState(false);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [zoomPosition, setZoomPosition] = useState({ x: 100, y: 100 });
-
-  const navigationPrevRef = useRef(null);
-  const navigationNextRef = useRef(null);
-  const containerRef = useRef(null);
-  const imageRef = useRef(null);
 
   const OfferBanner = () => {
     return (
-
       <>
         {product?.[0]?.offers?.length > 0 && (
           <div className="inline-flex my-2 items-center gap-2 bg-orange-50 border border-[#eaddc8] rounded-lg px-3 py-2 text-sm">
@@ -231,28 +223,27 @@ export default function ShowProduct() {
       </>
     );
   };
-  // Fetch product by slug and wishlist
+
   useEffect(() => {
     if (slug) {
       dispatch(getProductsById(slug));
     }
     dispatch(getWishlist());
-  }, [slug]);
+  }, [slug, dispatch]);
 
   const addToCart = (productId) => {
-    dispatch(createCartData(productId));
+    dispatch(createCartData({ productId, quantity }));
   };
-  // Check if product is in wishlist
+
   const isInWishlist = wishlist.some((item) => item.products?.some((p) => p._id === productId));
 
   const handleWishlistToggle = async () => {
     if (isInWishlist) {
       await dispatch(removeFromWishlist(productId));
-      dispatch(getWishlist());
     } else {
       await dispatch(addToWishlist(productId));
-      dispatch(getWishlist());
     }
+    dispatch(getWishlist());
   };
 
   const toggleSection = (section) => {
@@ -267,54 +258,7 @@ export default function ShowProduct() {
     }
   };
 
-  const handleZoomIn = () => {
-    setZoomLevel((prev) => Math.min(prev + 0.5, 2));
-    setIsZoomed(true);
-  };
-
-  const handleZoomOut = () => {
-    const newLevel = Math.max(zoomLevel - 0.5, 1);
-    setZoomLevel(newLevel);
-    if (newLevel === 1) setIsZoomed(false);
-  };
-
-  const handleImageClick = () => {
-    if (!isZoomed) {
-      setIsZoomed(true);
-      setZoomLevel(2);
-    } else {
-      setIsZoomed(false);
-      setZoomLevel(1);
-    }
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isZoomed || !containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setZoomPosition({
-      x: Math.max(0, Math.min(100, x)),
-      y: Math.max(0, Math.min(100, y)),
-    });
-  };
-
-  useEffect(() => {
-    const handleWheel = (e) => {
-      if (!containerRef.current?.contains(e.target)) return;
-      e.preventDefault();
-      if (e.deltaY < 0) {
-        handleZoomIn();
-      } else {
-        handleZoomOut();
-      }
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    return () => window.removeEventListener("wheel", handleWheel);
-  }, [zoomLevel]);
-
-  // Loading state
+  // Loading, Error, Not Found States
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -326,17 +270,13 @@ export default function ShowProduct() {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="text-center">
           <p className="text-red-500 mb-4 text-lg">Failed to load product</p>
           <p className="text-gray-600 mb-6">{error}</p>
-          <button
-            onClick={() => navigate('/')}
-            className="bg-[#b4853e] text-white px-8 py-3 rounded-md hover:bg-[#c0924e] transition-colors"
-          >
+          <button onClick={() => navigate('/')} className="bg-[#b4853e] text-white px-8 py-3 rounded-md hover:bg-[#c0924e]">
             Back to Home
           </button>
         </div>
@@ -344,17 +284,12 @@ export default function ShowProduct() {
     );
   }
 
-  // No product found
-  if (!product) {
+  if (!product || product.length === 0) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="text-center">
           <p className="text-gray-500 mb-4 text-lg">Product not found</p>
-          <p className="text-gray-400 mb-6">The product you're looking for doesn't exist or has been removed.</p>
-          <button
-            onClick={() => navigate('/')}
-            className="bg-[#b4853e] text-white px-8 py-3 rounded-md hover:bg-[#c0924e] transition-colors"
-          >
+          <button onClick={() => navigate('/')} className="bg-[#b4853e] text-white px-8 py-3 rounded-md hover:bg-[#c0924e]">
             Back to Home
           </button>
         </div>
@@ -362,12 +297,12 @@ export default function ShowProduct() {
     );
   }
 
-  // Calculate price and discount
-  const salePrice = product?.[0]?.price || product?.price || 0;
-  const originalPrice = product?.[0]?.originalPrice || salePrice;
-  const discount = product?.[0]?.discount || (originalPrice > salePrice ? Math.round(((originalPrice - salePrice) / originalPrice) * 100) : 0);
+  // Product data
+  const salePrice = product[0]?.price || 0;
+  const originalPrice = product[0]?.originalPrice || salePrice;
+  const discount = originalPrice > salePrice ? Math.round(((originalPrice - salePrice) / originalPrice) * 100) : 0;
   const total = salePrice * quantity;
-  const productImages = product?.[0]?.imagesUrl || (product.image ? [product.image] : []);
+  const productImages = Array.isArray(product[0]?.imagesUrl?.[0]) ? product[0]?.imagesUrl[0] : product[0]?.imagesUrl || [];
   const productUrl = window.location.href;
 
   return (
@@ -378,10 +313,8 @@ export default function ShowProduct() {
           <span className="text-gray-400 font-medium cursor-pointer hover:text-gray-600" onClick={() => navigate('/')}>
             Home
           </span>
-          <span className="mx-2">
-            /
-          </span>
-          <span className="text-gray-600 font-medium">{product?.[0]?.title || product?.[0]?.name || 'Product'}</span>
+          <span className="mx-2">/</span>
+          <span className="text-gray-600 font-medium">{product[0]?.title}</span>
         </div>
       </nav>
 
@@ -389,11 +322,8 @@ export default function ShowProduct() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Image Gallery */}
           <div className="space-y-4">
-            <div
-              ref={containerRef}
-              className="aspect-square bg-pink-50 rounded-lg overflow-hidden relative group cursor-zoom-in"
-              onMouseMove={handleMouseMove}
-            >
+            {/* Main Swiper */}
+            <div className="aspect-square bg-pink-50 rounded-lg overflow-hidden">
               <Swiper
                 spaceBetween={10}
                 navigation={true}
@@ -401,19 +331,13 @@ export default function ShowProduct() {
                 modules={[Navigation, Thumbs]}
                 className="main-swiper w-full h-full"
               >
-                {(Array.isArray(productImages[0]) ? productImages[0] : productImages).map((image, index) => (
+                {productImages.map((image, index) => (
                   <SwiperSlide key={index}>
-                    <div className="w-full h-full overflow-hidden flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center">
                       <img
-                        ref={imageRef}
                         src={image}
-                        alt={product?.name + " - Image " + (index + 1)}
-                        className="w-full h-full object-cover object-center transition-transform duration-500 ease-out"
-                        style={{
-                          transformOrigin: zoomPosition.x + "%" + zoomPosition.y + "%",
-                          cursor: isZoomed ? "zoom-out" : "zoom-in",
-                        }}
-                        onClick={handleImageClick}
+                        alt={`${product[0]?.title} - Image ${index + 1}`}
+                        className="max-w-full max-h-full object-contain"
                       />
                     </div>
                   </SwiperSlide>
@@ -421,29 +345,16 @@ export default function ShowProduct() {
               </Swiper>
             </div>
 
-            {/* Thumbnail Swiper */}
+            {/* Thumbnail Swiper - Fixed for classList error */}
             <div className="h-20">
               <Swiper
-                onSwiper={(swiper) => {
-                  setThumbsSwiper(swiper);
-                  setIsBeginning(swiper.isBeginning);
-                  setIsEnd(swiper.isEnd);
-                }}
-                onSlideChange={(swiper) => {
-                  setIsBeginning(swiper.isBeginning);
-                  setIsEnd(swiper.isEnd);
-                }}
+                onSwiper={setThumbsSwiper}
                 spaceBetween={8}
                 slidesPerView={6}
                 freeMode={true}
                 watchSlidesProgress={true}
-                modules={[FreeMode, Navigation, Thumbs]}
+                modules={[FreeMode, Thumbs]}
                 className="thumb-swiper"
-                onBeforeInit={(swiper) => {
-                  swiper.params.navigation.prevEl = navigationPrevRef.current;
-                  swiper.params.navigation.nextEl = navigationNextRef.current;
-                }}
-                navigation={true}
                 breakpoints={{
                   320: { slidesPerView: 4 },
                   640: { slidesPerView: 5 },
@@ -451,33 +362,15 @@ export default function ShowProduct() {
                   1024: { slidesPerView: 7 },
                 }}
               >
-                {(Array.isArray(productImages[0]) ? productImages[0] : productImages).map((image, index) => (
+                {productImages.map((image, index) => (
                   <SwiperSlide key={index} className="cursor-pointer">
-                    <div className="w-full h-20 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-amber-600 transition-colors">
-                      <img src={image} alt={product?.name + " - Image " + (index + 1)} className="w-full h-full object-cover" />
-                    </div>
+                    <img
+                      src={image}
+                      alt={`Thumbnail ${index + 1}`}
+                      className="w-full h-20 object-cover rounded-lg border-2 border-transparent swiper-slide-thumb-active:border-[#b4853e] swiper-slide-thumb-active:shadow-lg transition-all"
+                    />
                   </SwiperSlide>
                 ))}
-
-                <div
-                  ref={navigationPrevRef}
-                  className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all ${isBeginning ? 'opacity-0 pointer-events-none' : 'opacity-100'
-                    }`}
-                >
-                  <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </div>
-
-                <div
-                  ref={navigationNextRef}
-                  className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-all ${isEnd ? 'opacity-0 pointer-events-none' : 'opacity-100'
-                    }`}
-                >
-                  <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
               </Swiper>
             </div>
           </div>
@@ -485,10 +378,10 @@ export default function ShowProduct() {
           {/* Product Details */}
           <div className="space-y-6">
             <div>
-              <p className="text-sm text-gray-600 mb-2">SKU: {product?.[0]?.sku}</p>
-              <h1 className="text-2xl font-medium text-gray-900 mb-4">{product?.[0]?.title}</h1>
+              <p className="text-sm text-gray-600 mb-2">SKU: {product[0]?.sku}</p>
+              <h1 className="text-2xl font-medium text-gray-900 mb-4">{product[0]?.title}</h1>
 
-              <Rating rating={product?.[0]?.averageRating || 0} totalReviews={product?.[0]?.totalReviews || 0} />
+              <Rating rating={product[0]?.averageRating || 0} totalReviews={product[0]?.totalReviews || 0} />
 
               <SpecialDealBanner />
 
@@ -512,13 +405,13 @@ export default function ShowProduct() {
                   <div className="flex items-center border border-gray-300 rounded">
                     <button
                       onClick={() => handleQuantityChange("decrease")}
-                      className="p-2 hover:bg-gray-50 transition-colors disabled:opacity-50"
                       disabled={quantity <= 1}
+                      className="p-2 hover:bg-gray-50 disabled:opacity-50"
                     >
                       <MinusIcon className="w-4 h-4" />
                     </button>
                     <span className="px-4 py-2 font-medium">{quantity}</span>
-                    <button onClick={() => handleQuantityChange("increase")} className="p-2 hover:bg-gray-50 transition-colors">
+                    <button onClick={() => handleQuantityChange("increase")} className="p-2 hover:bg-gray-50">
                       <PlusIcon className="w-4 h-4" />
                     </button>
                   </div>
@@ -530,17 +423,23 @@ export default function ShowProduct() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-4 mb-6 text-sm">
-                <button onClick={() => {
-                  addToCart(productId);
-                  navigate("/shopping-cart");
-                }} className="flex-1 bg-[#b4853e] text-white py-3 px-6 rounded-md font-medium hover:bg-[#c0924e] transition-colors">
+              <div className="flex gap-4 mb-6">
+                <button
+                  onClick={() => {
+                    addToCart(productId);
+                    navigate("/shopping-cart");
+                  }}
+                  className="flex-1 bg-[#b4853e] text-white py-3 px-6 rounded-md font-medium hover:bg-[#c0924e] transition-colors"
+                >
                   Add to Cart
                 </button>
-                <button onClick={() => {
-                  addToCart(productId);
-                  navigate("/shopping-cart");
-                }} className="flex-1 bg-[#504d48] text-white py-3 px-6 rounded-md font-medium hover:bg-[#5a5651] transition-colors">
+                <button
+                  onClick={() => {
+                    addToCart(productId);
+                    navigate("/shopping-cart");
+                  }}
+                  className="flex-1 bg-[#504d48] text-white py-3 px-6 rounded-md font-medium hover:bg-[#5a5651] transition-colors"
+                >
                   Buy Now
                 </button>
               </div>
@@ -582,7 +481,7 @@ export default function ShowProduct() {
             {/* Collapsible Sections */}
             {[
               {
-                key: "specification",
+                key: "specifications",
                 title: "Product Specifications",
                 icon: ListIcon,
                 content: (
@@ -605,7 +504,7 @@ export default function ShowProduct() {
                 title: "Refund and Return Policy",
                 icon: CubeIcon,
                 content:
-                  product.refundPolicy ||
+                  product[0]?.refundPolicy ||
                   "Our return policy allows returns within 30 days of purchase. Items must be in original condition with tags attached. Return shipping costs may apply. Refunds will be processed within 5–7 business days after we receive the returned item.",
               },
               {
@@ -613,12 +512,11 @@ export default function ShowProduct() {
                 title: "Jewellery Care Instructions",
                 icon: ShieldIcon,
                 content:
-                  product.careInstructions ||
+                  product[0]?.careInstructions ||
                   "Avoid contact with water, perfumes, and cosmetics. Store in zip-lock plastic pouches or butter paper after use. Do not store in jewellery boxes or velvet boxes.",
               },
             ].map(({ key, title, icon: Icon, content }) => (
               <div key={key} className="border-t border-gray-200 my-4 pt-4">
-                {/* Header Section */}
                 <button
                   onClick={() => toggleSection(key)}
                   className="flex items-center justify-between w-full text-left hover:text-gray-700 transition-colors"
@@ -633,31 +531,9 @@ export default function ShowProduct() {
                   )}
                 </button>
 
-                {/* Expanded Content */}
                 {expandedSections[key] && (
-                  <div className="mt-4 animate-fadeIn">
-                    {React.isValidElement(content) ? (
-                      // ✅ Handles JSX content (like specification)
-                      content
-                    ) : typeof content === "object" ? (
-                      // ✅ Handles key-value objects if any
-                      <div className="space-y-3">
-                        {Object.entries(content).map(([k, v]) => (
-                          <div key={k} className="flex">
-                            <span className="w-1/3 text-sm text-gray-600 capitalize">
-                              {k
-                                .replace(/([A-Z])/g, " $1")
-                                .replace(/^./, (str) => str.toUpperCase())}
-                              :
-                            </span>
-                            <span className="w-2/3 text-sm text-gray-900">{v}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      // ✅ Handles plain text (refund & care)
-                      <p className="text-sm text-gray-600 leading-relaxed">{content}</p>
-                    )}
+                  <div className="mt-4">
+                    {React.isValidElement(content) ? content : <p className="text-sm text-gray-600 leading-relaxed">{content}</p>}
                   </div>
                 )}
               </div>
@@ -669,29 +545,13 @@ export default function ShowProduct() {
       {/* Share Modal */}
       <ShareModal isOpen={shareModalOpen} onClose={() => setShareModalOpen(false)} productUrl={productUrl} />
 
-      <style>{`
-        .animate-fadeIn { 
-          animation: fadeIn 0.3s ease-in-out; 
-        }
-        @keyframes fadeIn {
-          from { 
-            opacity: 0; 
-            transform: translateY(-10px); 
-          }
-          to { 
-            opacity: 1; 
-            transform: translateY(0); 
-          }
-        }
-        .cursor-zoom-in { 
-          cursor: zoom-in; 
-        }
-        .thumb-swiper .swiper-slide-thumb-active div {
-          border-color: #b45309 !important;
-          box-shadow: 0 0 6px rgba(180, 83, 9, 0.6);
+      {/* CSS for active thumbnail */}
+      <style jsx>{`
+        .thumb-swiper .swiper-slide-thumb-active img {
+          border: 2px solid #b4853e;
+          box-shadow: 0 0 8px rgba(180, 83, 9, 0.6);
         }
       `}</style>
     </>
   );
 }
-

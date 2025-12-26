@@ -1380,6 +1380,9 @@ const BuyNow = () => {
 
   const handleAddToWishlist = (productId) => {
     dispatch(addToWishlist(productId));
+    if (status === 'succeeded') {
+      dispatch(removeCartData(productId));
+    }
   };
 
   const calculateTotals = () => {
