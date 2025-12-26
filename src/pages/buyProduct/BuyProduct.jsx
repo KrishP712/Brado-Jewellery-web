@@ -258,7 +258,11 @@ export default function ShowProduct() {
   const addToCart = (productId) => {
     dispatch(createCartData(productId));
   };
-  const isInWishlist = wishlist.some((item) => item.products?.some((p) => p._id === productId));
+  const isInWishlist = Array.isArray(wishlist)
+  ? wishlist.some((item) =>
+      item.products?.some((p) => p._id === productId)
+    )
+  : false;
 
   const handleWishlistToggle = async () => {
     if (isInWishlist) {
@@ -359,7 +363,7 @@ export default function ShowProduct() {
   }
 
   // No product found
-  if (!product) {
+  if (!Array.isArray(product) || product.length === 0) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="text-center">
@@ -614,7 +618,7 @@ export default function ShowProduct() {
                 title: "Refund and Return Policy",
                 icon: CubeIcon,
                 content:
-                  product.refundPolicy ||
+                product?.[0]?.refundPolicy ||
                   "Our return policy allows returns within 30 days of purchase. Items must be in original condition with tags attached. Return shipping costs may apply. Refunds will be processed within 5–7 business days after we receive the returned item.",
               },
               {
@@ -622,7 +626,7 @@ export default function ShowProduct() {
                 title: "Jewellery Care Instructions",
                 icon: ShieldIcon,
                 content:
-                  product.careInstructions ||
+                  product?.[0]?.careInstructions ||
                   "Avoid contact with water, perfumes, and cosmetics. Store in zip-lock plastic pouches or butter paper after use. Do not store in jewellery boxes or velvet boxes.",
               },
             ].map(({ key, title, icon: Icon, content }) => (
