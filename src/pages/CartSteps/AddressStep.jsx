@@ -21,7 +21,8 @@ const AddressStep = ({
   products,
   totalItems,
   totals, // { totalMRP, totalDiscount }
-  dispatch
+  dispatch,
+  getAddressData,
 }) => {
   return (
     <div className="grid lg:grid-cols-3 gap-8">

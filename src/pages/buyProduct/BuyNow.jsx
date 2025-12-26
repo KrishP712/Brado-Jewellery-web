@@ -1408,9 +1408,7 @@ const BuyNow = () => {
   const totals = calculateTotals();
   const totalItems = products.length;
 
-  // const couponDiscount = coupon?.find((coupon) => coupon._id === selectedCouponId)?.discount || 0;
-  // console.log(couponDiscount, "couponDiscount");
-  // Effects
+
   useEffect(() => {
     dispatch(couponcode ? getCartData(couponcode) : getCartData());
   }, [dispatch, couponcode]);
@@ -1573,6 +1571,7 @@ const BuyNow = () => {
     handleRemoveProduct,
     handleAddToWishlist,
     totalItems,
+    getAddressData,
   };
 
   const renderStep = () => {
