@@ -119,6 +119,9 @@ const SocialIcon = ({ type, className }) => {
     twitter: "0 0 512 512",
     linkedin: "0 0 448 512",
   };
+  if (!type || !icons[type] || !views[type]) {
+    return null;
+  }
 
   return (
     <svg className={className} fill="currentColor" viewBox={views[type]} xmlns="http://www.w3.org/2000/svg">
@@ -259,10 +262,10 @@ export default function ShowProduct() {
     dispatch(createCartData(productId));
   };
   const isInWishlist = Array.isArray(wishlist)
-  ? wishlist.some((item) =>
+    ? wishlist.some((item) =>
       item.products?.some((p) => p._id === productId)
     )
-  : false;
+    : false;
 
   const handleWishlistToggle = async () => {
     if (isInWishlist) {
@@ -618,7 +621,7 @@ export default function ShowProduct() {
                 title: "Refund and Return Policy",
                 icon: CubeIcon,
                 content:
-                product?.[0]?.refundPolicy ||
+                  product?.[0]?.refundPolicy ||
                   "Our return policy allows returns within 30 days of purchase. Items must be in original condition with tags attached. Return shipping costs may apply. Refunds will be processed within 5–7 business days after we receive the returned item.",
               },
               {
