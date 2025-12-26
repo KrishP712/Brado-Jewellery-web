@@ -238,6 +238,24 @@ export default function ShowProduct() {
     dispatch(getWishlist());
   }, [slug]);
 
+  useEffect(() => {
+    const swiper = thumbsSwiperRef.current;
+
+    if (
+      swiper &&
+      navigationPrevRef.current &&
+      navigationNextRef.current &&
+      swiper.navigation
+    ) {
+      swiper.params.navigation = {
+        prevEl: navigationPrevRef.current,
+        nextEl: navigationNextRef.current,
+      };
+
+      swiper.navigation.init();
+      swiper.navigation.update();
+    }
+  }, []);
   const addToCart = (productId) => {
     dispatch(createCartData(productId));
   };
@@ -368,24 +386,7 @@ export default function ShowProduct() {
   const productUrl = window.location.href;
 
 
-  useEffect(() => {
-    const swiper = thumbsSwiperRef.current;
 
-    if (
-      swiper &&
-      navigationPrevRef.current &&
-      navigationNextRef.current &&
-      swiper.navigation
-    ) {
-      swiper.params.navigation = {
-        prevEl: navigationPrevRef.current,
-        nextEl: navigationNextRef.current,
-      };
-
-      swiper.navigation.init();
-      swiper.navigation.update();
-    }
-  }, []);
 
   return (
     <>
