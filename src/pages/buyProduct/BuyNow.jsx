@@ -1551,9 +1551,12 @@ const BuyNow = () => {
     console.log(result,"result");
     const orderId = result?.payload?.order?.orderId;
     if (orderId) {
-      for (const item of result.payload.order.items) {
-        dispatch(removeCartDataWithOutToast(item.productId));
-      }
+      result.payload.order.items.forEach(item => {
+        const productId = String(item.productId?._id || item.productId);
+    
+        dispatch(removeCartDataWithOutToast(productId));
+      });
+    
       dispatch(getOrderData());
       nextStep();
     }
