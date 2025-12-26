@@ -1347,7 +1347,7 @@ const BuyNow = () => {
   const { coupon, loading } = useSelector((state) => state.coupon);
   const couponData = coupon?.coupons;
   const order = useSelector((state) => state.order.order);
-
+  console.log(order, "order");
   const [currentStep, setCurrentStep] = useState(1);
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
