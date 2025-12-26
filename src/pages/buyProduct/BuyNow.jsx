@@ -1537,8 +1537,9 @@ const BuyNow = () => {
 
     const result = await dispatch(createOrder(orderPayload));
     const orderId = result?.payload?.order?.orderId;
+    console.log(orderId);
     if (orderId) {
-      dispatch(getorderbyorderidData(orderId));
+      dispatch(getOrderData());
       nextStep();
     }
   };
