@@ -1323,7 +1323,7 @@ import {
   decreaseCartQuantity,
   removeCartData
 } from '../../redux/slices/cart';
-import { createOrder, getorderbyorderidData } from '../../redux/slices/order';
+import { createOrder, getOrderData } from '../../redux/slices/order';
 import { addToWishlist, } from '../../redux/slices/wishlist';
 import { getCouponData } from '../../redux/slices/coupon';
 import { getAddressData, createAddressData } from '../../redux/slices/address';
@@ -1416,6 +1416,10 @@ const BuyNow = () => {
   useEffect(() => {
     if (showCouponModal) dispatch(getCouponData());
   }, [showCouponModal, dispatch]);
+
+  useEffect(() => {
+    dispatch(getOrderData());
+  }, [dispatch]);
 
   useEffect(() => {
     if (showAddressModal) dispatch(getAddressData());
