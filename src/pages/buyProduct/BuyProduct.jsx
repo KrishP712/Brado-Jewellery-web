@@ -187,8 +187,7 @@ export default function ShowProduct() {
   const navigate = useNavigate();
 
   // Decode slug from URL
-  let slug = decodeURIComponent(params.slug);
-  slug = slug.trim();
+  const slug = params.slug ? decodeURIComponent(params.slug).trim() : "";
   const { product, loading, error } = useSelector((state) => state.products);
   const { wishlist, loading: wishlistLoading } = useSelector((state) => state.wishlist);
   const productId = product?.[0]?._id;
