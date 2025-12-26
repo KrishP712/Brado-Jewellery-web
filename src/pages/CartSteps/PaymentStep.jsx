@@ -60,7 +60,7 @@ const PaymentStep = ({ cartData, products, handleOrder, prevStep }) => {
           {/* Shipping Method */}
           <div>
             <h2 className="text-2xl font-semibold mb-6">Shipping Method</h2>
-            <div className="bg-gray-50 border border-gray-300 rounded-lg p-5 flex items-center justify-between">
+            <div className="w-full bg-gray-50 border border-gray-300 rounded-lg p-5 flex items-center justify-between">
               <label className="flex items-center cursor-pointer">
                 <input
                   type="radio"
@@ -84,7 +84,7 @@ const PaymentStep = ({ cartData, products, handleOrder, prevStep }) => {
             <div className="space-y-4">
 
               {/* Online Payment */}
-              <div className="bg-white border border-gray-300 rounded-lg p-5">
+              <div className="w-full bg-white border border-gray-300 rounded-lg p-5">
                 <label className="flex items-center cursor-pointer">
                   <input
                     type="radio"
@@ -101,7 +101,7 @@ const PaymentStep = ({ cartData, products, handleOrder, prevStep }) => {
               </div>
 
               {/* Cash on Delivery */}
-              <div className="bg-white border border-gray-300 rounded-lg p-5 flex items-center justify-between">
+              <div className="w-full bg-white border border-gray-300 rounded-lg p-5 flex items-center justify-between">
                 <label className="flex items-center cursor-pointer flex-1">
                   <input
                     type="radio"

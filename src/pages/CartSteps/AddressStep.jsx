@@ -55,32 +55,32 @@ const AddressStep = ({
   // Validation function
   const validateForm = () => {
     const errors = {};
-
-    if (!formData.contactName.trim()) {
+    const safeTrim = (value) => String(value ?? "").trim();
+    if (!safeTrim(formData.contactName)) {
       errors.contactName = "Person name is required";
     }
-
-    if (!formData.contactNo.trim()) {
+    
+    if (!safeTrim(formData.contactNo)) {
       errors.contactNo = "Contact number is required";
-    } else if (!/^\d{10}$/.test(formData.contactNo.replace(/\D/g, ''))) {
+    } else if (!/^\d{10}$/.test(String(formData.contactNo))) {
       errors.contactNo = "Please enter a valid 10-digit mobile number";
     }
-
-    if (!formData.addressLine1.trim()) {
+    
+    if (!safeTrim(formData.addressLine1)) {
       errors.addressLine1 = "Address line 1 is required";
     }
-
-    if (!formData.city.trim()) {
+    
+    if (!safeTrim(formData.city)) {
       errors.city = "City is required";
     }
-
-    if (!formData.pinCode?.trim()) {
+    
+    if (!safeTrim(formData.pinCode)) {
       errors.pinCode = "Pin code is required";
-    } else if (!/^\d{6}$/.test(formData.pinCode)) {
+    } else if (!/^\d{6}$/.test(String(formData.pinCode))) {
       errors.pinCode = "Pin code must be 6 digits";
     }
-
-    if (!formData.state.trim()) {
+    
+    if (!safeTrim(formData.state)) {
       errors.state = "State is required";
     }
 
