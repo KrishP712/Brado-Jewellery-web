@@ -26,7 +26,7 @@ const CompleteStep = ({ order, cartData, formData }) => {
             </div>
             <h2 className="text-[16px] font-medium mb-6">Order Placed Successfully</h2>
             <p className="text-[14px] mb-2 text-[#696661]">
-              Order No.: <span className="text-black">{order?.orderId}</span>
+              Order No.: <span className="text-black">{latestOrder?.orderId}</span>
             </p>
             <p className="text-[14px] text-[#696661]">
               Order Amount: <span className="text-black">₹{finalAmount}</span>
