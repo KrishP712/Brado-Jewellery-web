@@ -100,7 +100,11 @@ const AddressStep = ({
     const { name } = e.target;
     handleInputChange(e);
     if (localErrors[name]) {
-      setLocalErrors(prev => ({ ...prev, [name]: '' }));
+      setLocalErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
     }
   };
 
@@ -124,9 +128,8 @@ const AddressStep = ({
                     {addressData.map((item, index) => (
                       <label
                         key={index}
-                        className={`flex items-start p-4 border rounded-lg cursor-pointer hover:shadow-sm transition-all ${
-                          selectedAddress?._id === item._id ? "border-[#b4853e]" : "border-gray-200"
-                        }`}
+                        className={`flex items-start p-4 border rounded-lg cursor-pointer hover:shadow-sm transition-all ${selectedAddress?._id === item._id ? "border-[#b4853e]" : "border-gray-200"
+                          }`}
                       >
                         <input
                           type="radio"
@@ -198,9 +201,8 @@ const AddressStep = ({
                 name="contactName"
                 value={formData.contactName}
                 onChange={handleChangeWithClearError}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                  localErrors.contactName ? "border-red-500" : "border-gray-300 focus:border-[#b4853e] focus:ring-[#b4853e]"
-                }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.contactName ? "border-red-500" : "border-gray-300 focus:border-[#b4853e] focus:ring-[#b4853e]"
+                  }`}
               />
               {localErrors.contactName && <p className="text-red-500 text-xs mt-1">{localErrors.contactName}</p>}
             </div>
@@ -215,9 +217,8 @@ const AddressStep = ({
                 value={formData.contactNo}
                 onChange={handleChangeWithClearError}
                 maxLength="10"
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                  localErrors.contactNo ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.contactNo ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                  }`}
               />
               {localErrors.contactNo && <p className="text-red-500 text-xs mt-1">{localErrors.contactNo}</p>}
             </div>
@@ -233,9 +234,8 @@ const AddressStep = ({
               className="peer w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b4853e]"
               placeholder=" "
             />
-            <label className={`absolute left-3 transition-all bg-white px-1 pointer-events-none ${
-              formData.email ? "-top-2 text-xs text-[#b4853e]" : "top-3 text-sm text-gray-500 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#b4853e]"
-            }`}>
+            <label className={`absolute left-3 transition-all bg-white px-1 pointer-events-none ${formData.email ? "-top-2 text-xs text-[#b4853e]" : "top-3 text-sm text-gray-500 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#b4853e]"
+              }`}>
               Email Id (Optional)
             </label>
           </div>
@@ -251,9 +251,8 @@ const AddressStep = ({
                 name="addressLine1"
                 value={formData.addressLine1}
                 onChange={handleChangeWithClearError}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                  localErrors.addressLine1 ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.addressLine1 ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                  }`}
               />
               {localErrors.addressLine1 && <p className="text-red-500 text-xs mt-1">{localErrors.addressLine1}</p>}
             </div>
@@ -290,9 +289,8 @@ const AddressStep = ({
                 name="city"
                 value={formData.city}
                 onChange={handleChangeWithClearError}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                  localErrors.city ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.city ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                  }`}
               />
               {localErrors.city && <p className="text-red-500 text-xs mt-1">{localErrors.city}</p>}
             </div>
@@ -310,9 +308,8 @@ const AddressStep = ({
                 value={formData.pinCode}
                 onChange={handleChangeWithClearError}
                 maxLength="6"
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                  localErrors.pinCode ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.pinCode ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                  }`}
               />
               {localErrors.pinCode && <p className="text-red-500 text-xs mt-1">{localErrors.pinCode}</p>}
             </div>
@@ -325,9 +322,8 @@ const AddressStep = ({
                 name="state"
                 value={formData.state}
                 onChange={handleChangeWithClearError}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                  localErrors.state ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.state ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                  }`}
               />
               {localErrors.state && <p className="text-red-500 text-xs mt-1">{localErrors.state}</p>}
             </div>
