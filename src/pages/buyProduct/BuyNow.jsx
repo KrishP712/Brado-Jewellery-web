@@ -1508,7 +1508,7 @@ const BuyNow = () => {
 
     const orderPayload = {
       items: cartData.products.map(p => ({
-        productId: p.productId,
+        productId: p.productId?._id || p.productId,
         title: p.title,
         sku: p.sku,
         slug: p.slug,
