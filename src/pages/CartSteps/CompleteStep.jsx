@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const CompleteStep = ({ order, cartData, formData }) => {
   console.log(cartData);
-  console.log(order);
+  console.log(order, "order");
   const navigate = useNavigate();
   const shippingCharge =  70;
   const codCharge = 55;
