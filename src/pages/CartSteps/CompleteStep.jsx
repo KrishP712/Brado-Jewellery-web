@@ -4,6 +4,7 @@ import { Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const CompleteStep = ({ order, cartData, formData }) => {
+  console.log(cartData);
   const navigate = useNavigate();
   const shippingCharge = cartData?.shippingFee;
   const codCharge = cartData?.codCharge;
