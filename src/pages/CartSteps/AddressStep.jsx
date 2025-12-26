@@ -1,5 +1,5 @@
 // src/components/checkout/AddressStep.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, ArrowLeft } from 'lucide-react';
 import CheckBoxIcon from '../../assets/icons/CheckBox';
 import add from "../../assets/images/wishlist/address.png";
@@ -18,12 +18,11 @@ const AddressStep = ({
   cartData,
   products,
   totalItems,
-  dispatch,
-  getAddressData,
+  dispatch
 }) => {
   const [localErrors, setLocalErrors] = useState({});
 
-  // Calculate totals safely inside component
+  // Safe calculation of totals
   const calculateTotals = () => {
     if (!Array.isArray(products) || products.length === 0) {
       return { totalMRP: "0.00", totalDiscount: "0.00", totalPrice: "0.00" };
@@ -52,35 +51,45 @@ const AddressStep = ({
 
   const totals = calculateTotals();
 
-  // Validation function
+  // Safe trim helper
+  const safeTrim = (value) => (value || "").toString().trim();
+
+  // Form validation
   const validateForm = () => {
     const errors = {};
-    const safeTrim = (value) => String(value ?? "").trim();
-    if (!safeTrim(formData.contactName)) {
+
+    const contactName = safeTrim(formData.contactName);
+    const contactNo = safeTrim(formData.contactNo);
+    const addressLine1 = safeTrim(formData.addressLine1);
+    const city = safeTrim(formData.city);
+    const pinCode = safeTrim(formData.pinCode);
+    const state = safeTrim(formData.state);
+
+    if (!contactName) {
       errors.contactName = "Person name is required";
     }
-    
-    if (!safeTrim(formData.contactNo)) {
+
+    if (!contactNo) {
       errors.contactNo = "Contact number is required";
-    } else if (!/^\d{10}$/.test(String(formData.contactNo))) {
+    } else if (!/^\d{10}$/.test(contactNo.replace(/\D/g, ''))) {
       errors.contactNo = "Please enter a valid 10-digit mobile number";
     }
-    
-    if (!safeTrim(formData.addressLine1)) {
+
+    if (!addressLine1) {
       errors.addressLine1 = "Address line 1 is required";
     }
-    
-    if (!safeTrim(formData.city)) {
+
+    if (!city) {
       errors.city = "City is required";
     }
-    
-    if (!safeTrim(formData.pinCode)) {
+
+    if (!pinCode) {
       errors.pinCode = "Pin code is required";
-    } else if (!/^\d{6}$/.test(String(formData.pinCode))) {
+    } else if (!/^\d{6}$/.test(pinCode)) {
       errors.pinCode = "Pin code must be 6 digits";
     }
-    
-    if (!safeTrim(formData.state)) {
+
+    if (!state) {
       errors.state = "State is required";
     }
 
@@ -88,17 +97,18 @@ const AddressStep = ({
     return Object.keys(errors).length === 0;
   };
 
-  // Handle Next with validation
+  // Handle next step with validation
   const handleValidatedNext = () => {
     if (validateForm()) {
       handleNextStep();
     }
   };
 
-  // Clear error when user starts typing
+  // Clear error when user types
   const handleChangeWithClearError = (e) => {
-    const { name } = e.target;
+    const { name, value } = e.target;
     handleInputChange(e);
+
     if (localErrors[name]) {
       setLocalErrors(prev => {
         const newErrors = { ...prev };
@@ -112,24 +122,37 @@ const AddressStep = ({
     <div className="grid lg:grid-cols-3 gap-8">
       {/* Left Column */}
       <div className="lg:col-span-2">
-        {/* Address Modal */}
+
+        {/* Address Selection Modal */}
         {showAddressModal && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowAddressModal(false)}>
-            <div className="bg-white rounded-lg shadow-lg w-[420px] max-h-[90vh] flex flex-col relative" onClick={(e) => e.stopPropagation()}>
-              <button onClick={() => setShowAddressModal(false)} className="absolute top-3 right-3 text-gray-500 hover:text-gray-800">
+          <div
+            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+            onClick={() => setShowAddressModal(false)}
+          >
+            <div
+              className="bg-white rounded-lg shadow-lg w-[420px] max-h-[90vh] flex flex-col relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowAddressModal(false)}
+                className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
+              >
                 <X className="w-5 h-5" />
               </button>
+
               <div className="p-6 pb-3 border-b">
                 <h2 className="text-lg font-semibold">Select Delivery Address</h2>
               </div>
+
               <div className="flex-1 overflow-y-auto px-6 py-4">
                 {addressData?.length > 0 ? (
                   <div className="space-y-3">
                     {addressData.map((item, index) => (
                       <label
-                        key={index}
-                        className={`flex items-start p-4 border rounded-lg cursor-pointer hover:shadow-sm transition-all ${selectedAddress?._id === item._id ? "border-[#b4853e]" : "border-gray-200"
-                          }`}
+                        key={item._id || index}
+                        className={`flex items-start p-4 border rounded-lg cursor-pointer hover:shadow-sm transition-all ${
+                          selectedAddress?._id === item._id ? "border-[#b4853e]" : "border-gray-200"
+                        }`}
                       >
                         <input
                           type="radio"
@@ -138,10 +161,11 @@ const AddressStep = ({
                           className="mt-1 mr-3 accent-[#b4853e]"
                         />
                         <div className="flex flex-col text-sm text-gray-700">
-                          <span className="font-medium text-black">{item.name}</span>
-                          <span className="text-gray-500">+91 {item.contactno}</span>
+                          <span className="font-medium text-black">{item.name || 'N/A'}</span>
+                          <span className="text-gray-500">+91 {item.contactno || 'N/A'}</span>
                           <span className="text-gray-600 mt-1 leading-snug">
-                            {item.address1}, {item.address2 && `${item.address2}, `}{item.landmark && `${item.landmark}, `}
+                            {item.address1}, {item.address2 && `${item.address2}, `}
+                            {item.landmark && `${item.landmark}, `}
                             {item.city}, {item.state} - {item.pincode}
                           </span>
                         </div>
@@ -156,6 +180,7 @@ const AddressStep = ({
                   </div>
                 )}
               </div>
+
               {addressData?.length > 0 && (
                 <div className="border-t p-4 flex justify-end">
                   <button
@@ -164,7 +189,7 @@ const AddressStep = ({
                       setShowAddressModal(false);
                     }}
                     disabled={!selectedAddress}
-                    className="bg-[#b4853e] text-white px-5 py-2 rounded font-semibold hover:bg-[#9a7437] disabled:opacity-60"
+                    className="bg-[#b4853e] text-white px-5 py-2 rounded font-semibold hover:bg-[#9a7437] disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     Apply
                   </button>
@@ -188,7 +213,7 @@ const AddressStep = ({
           </button>
         </div>
 
-        {/* Form */}
+        {/* Address Form */}
         <div className="p-6 space-y-6 bg-white rounded-lg shadow-sm">
           {/* Name & Contact */}
           <div className="grid md:grid-cols-2 gap-6">
@@ -199,10 +224,11 @@ const AddressStep = ({
               <input
                 type="text"
                 name="contactName"
-                value={formData.contactName}
+                value={formData.contactName || ''}
                 onChange={handleChangeWithClearError}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.contactName ? "border-red-500" : "border-gray-300 focus:border-[#b4853e] focus:ring-[#b4853e]"
-                  }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
+                  localErrors.contactName ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                }`}
               />
               {localErrors.contactName && <p className="text-red-500 text-xs mt-1">{localErrors.contactName}</p>}
             </div>
@@ -214,11 +240,12 @@ const AddressStep = ({
               <input
                 type="text"
                 name="contactNo"
-                value={formData.contactNo}
+                value={formData.contactNo || ''}
                 onChange={handleChangeWithClearError}
                 maxLength="10"
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.contactNo ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                  }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
+                  localErrors.contactNo ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                }`}
               />
               {localErrors.contactNo && <p className="text-red-500 text-xs mt-1">{localErrors.contactNo}</p>}
             </div>
@@ -229,18 +256,21 @@ const AddressStep = ({
             <input
               type="email"
               name="email"
-              value={formData.email}
+              value={formData.email || ''}
               onChange={handleInputChange}
               className="peer w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b4853e]"
               placeholder=" "
             />
-            <label className={`absolute left-3 transition-all bg-white px-1 pointer-events-none ${formData.email ? "-top-2 text-xs text-[#b4853e]" : "top-3 text-sm text-gray-500 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#b4853e]"
-              }`}>
+            <label
+              className={`absolute left-3 bg-white px-1 pointer-events-none transition-all ${
+                formData.email ? "-top-2 text-xs text-[#b4853e]" : "top-3 text-sm text-gray-500 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#b4853e]"
+              }`}
+            >
               Email Id (Optional)
             </label>
           </div>
 
-          {/* Address Line 1 & 2 */}
+          {/* Address Lines */}
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -249,19 +279,21 @@ const AddressStep = ({
               <input
                 type="text"
                 name="addressLine1"
-                value={formData.addressLine1}
+                value={formData.addressLine1 || ''}
                 onChange={handleChangeWithClearError}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.addressLine1 ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                  }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
+                  localErrors.addressLine1 ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                }`}
               />
               {localErrors.addressLine1 && <p className="text-red-500 text-xs mt-1">{localErrors.addressLine1}</p>}
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Address Line 2 (Optional)</label>
               <input
                 type="text"
                 name="addressLine2"
-                value={formData.addressLine2}
+                value={formData.addressLine2 || ''}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b4853e]"
               />
@@ -275,11 +307,12 @@ const AddressStep = ({
               <input
                 type="text"
                 name="landmark"
-                value={formData.landmark}
+                value={formData.landmark || ''}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b4853e]"
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 City <span className="text-red-500">*</span>
@@ -287,10 +320,11 @@ const AddressStep = ({
               <input
                 type="text"
                 name="city"
-                value={formData.city}
+                value={formData.city || ''}
                 onChange={handleChangeWithClearError}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.city ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                  }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
+                  localErrors.city ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                }`}
               />
               {localErrors.city && <p className="text-red-500 text-xs mt-1">{localErrors.city}</p>}
             </div>
@@ -305,14 +339,16 @@ const AddressStep = ({
               <input
                 type="text"
                 name="pinCode"
-                value={formData.pinCode}
+                value={formData.pinCode || ''}
                 onChange={handleChangeWithClearError}
                 maxLength="6"
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.pinCode ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                  }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
+                  localErrors.pinCode ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                }`}
               />
               {localErrors.pinCode && <p className="text-red-500 text-xs mt-1">{localErrors.pinCode}</p>}
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 State <span className="text-red-500">*</span>
@@ -320,17 +356,71 @@ const AddressStep = ({
               <input
                 type="text"
                 name="state"
-                value={formData.state}
+                value={formData.state || ''}
                 onChange={handleChangeWithClearError}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.state ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                  }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
+                  localErrors.state ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                }`}
               />
               {localErrors.state && <p className="text-red-500 text-xs mt-1">{localErrors.state}</p>}
             </div>
           </div>
 
-          {/* Checkboxes and conditional sections remain unchanged */}
-          {/* ... (same as your original code) */}
+          {/* Same Address Checkbox */}
+          <div className="flex items-center mt-6">
+            <input
+              type="checkbox"
+              name="sameAddress"
+              checked={formData.sameAddress || false}
+              onChange={handleInputChange}
+              className="w-4 h-4 accent-[#b4853e] mr-3"
+            />
+            <span className="text-sm">My delivery and billing addresses are the same.</span>
+          </div>
+
+          {/* Billing Address (Conditional) */}
+          {!formData.sameAddress && (
+            <div className="pt-6 mt-6 border-t">
+              <h3 className="text-lg font-semibold mb-4">Billing Address</h3>
+              {/* Add your billing fields here if needed */}
+            </div>
+          )}
+
+          {/* Statutory Information */}
+          <div className="flex items-center mt-6">
+            <input
+              type="checkbox"
+              name="addStatutory"
+              checked={formData.addStatutory || false}
+              onChange={handleInputChange}
+              className="w-4 h-4 accent-[#b4853e] mr-3"
+            />
+            <span className="text-sm">Add statutory information</span>
+          </div>
+
+          {formData.addStatutory && (
+            <div className="pt-4 mt-4 border-t">
+              <h3 className="text-lg font-semibold mb-4">Statutory Information</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  name="companyName"
+                  placeholder="Company Name"
+                  value={formData.companyName || ''}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b4853e]"
+                />
+                <input
+                  type="text"
+                  name="gstNo"
+                  placeholder="GST No."
+                  value={formData.gstNo || ''}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b4853e]"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -349,7 +439,6 @@ const AddressStep = ({
             <span className="text-[#696661] text-[14px]">Discount</span>
             <span className="text-[14px]">-₹{totals.totalDiscount}</span>
           </div>
-          {/* Coupon & Offer discounts */}
         </div>
 
         <div className="border-t pt-4 mb-6">
