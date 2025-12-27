@@ -53,7 +53,6 @@ function Order() {
       status !== "Delivered" &&
       status !== "Cancelled" &&
       status !== "Returned and Refunded" &&
-      status !== "Shipped" &&
       status !== "Out for Delivery"
     );
   };
