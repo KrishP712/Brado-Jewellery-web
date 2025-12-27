@@ -178,10 +178,10 @@ const Category = () => {
 
   const getPercentage = (value) => {
     if (!initialPriceRef.current) return 0;
-  
-    const min = 0; 
-    const max = initialPriceRef.current; 
-  
+
+    const min = 0;
+    const max = initialPriceRef.current;
+
     return ((value - min) / (max - min)) * 100;
   };
 
@@ -192,21 +192,27 @@ const Category = () => {
 
   const handleMouseMove = useCallback(
     (e) => {
-      if (isDragging === null || !sliderRef.current) return;
+      if (isDragging === null || !sliderRef.current || !initialPriceRef.current) return;
 
       const rect = sliderRef.current.getBoundingClientRect();
-      const percentage = Math.min(Math.max(0, (e.clientX - rect.left) / rect.width), 1);
-      const newValue = Math.round(percentage * priceRangeData.max);
+      const percentage = Math.min(
+        Math.max(0, (e.clientX - rect.left) / rect.width),
+        1
+      );
+
+      const newValue = Math.round(percentage * initialPriceRef.current);
 
       setPriceRange((prev) => {
-        const newRange = [...prev];
-        newRange[isDragging] = newValue;
-        if (isDragging === 0 && newValue > prev[1]) newRange[1] = newValue;
-        else if (isDragging === 1 && newValue < prev[0]) newRange[0] = newValue;
-        return newRange;
+        const next = [...prev];
+        next[isDragging] = newValue;
+
+        if (isDragging === 0 && newValue > prev[1]) next[1] = newValue;
+        if (isDragging === 1 && newValue < prev[0]) next[0] = newValue;
+
+        return next;
       });
     },
-    [isDragging, priceRangeData]
+    [isDragging]
   );
 
   const handleMouseUp = useCallback(() => {
