@@ -99,7 +99,7 @@ const Category = () => {
   const productState = useSelector((state) => state?.products?.products);
   const products = productState?.products || [];
   const availableFilters = productState?.availableFilters || [];
-  const priceRangeData = productState?.priceRange || { min: 0, max: 10000 };
+  const priceRangeData = productState?.priceRange;
   const [selectedPriceRange, setSelectedPriceRange] = useState([0, 0]);
   const debouncedPriceRange = useDebounce(selectedPriceRange, 500);
   const totalPages = productState?.totalPages || 1;
@@ -110,11 +110,11 @@ const Category = () => {
   const [selectedFilters, setSelectedFilters] = useState({});
   const [sortBy, setSortBy] = useState("Latest");
   const [isDragging, setIsDragging] = useState(null);
-
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const sliderRef = useRef(null);
   const debounceTimer = useRef(null);
   const initialPriceRef = useRef(null);
+  const categoryMaxRef = useRef(null);
   const wishlistItems = useSelector((state) => state.wishlist.wishlist);
 
   const addToCart = (id) => {
@@ -142,7 +142,21 @@ const Category = () => {
   }, [priceRangeData]);
 
   useEffect(() => {
+    if (
+      priceRangeData?.max &&
+      !categoryMaxRef.current
+    ) {
+      categoryMaxRef.current = priceRangeData.max;
+      setPriceRange([0, priceRangeData.max]);
+    }
+  }, [priceRangeData]);
+
+  useEffect(() => {
     initialPriceRef.current = null;
+  }, [categoryName]);
+
+  useEffect(() => {
+    categoryMaxRef.current = null;
   }, [categoryName]);
 
   useEffect(() => {
@@ -176,14 +190,10 @@ const Category = () => {
   const handlePrev = () => swiperRef.current?.slidePrev();
   const handleNext = () => swiperRef.current?.slideNext();
 
-  const getPercentage = (value) => {
-    if (!initialPriceRef.current) return 0;
-
-    const min = 0;
-    const max = initialPriceRef.current;
-
-    return ((value - min) / (max - min)) * 100;
-  };
+  const getPercentage = (value) =>
+    categoryMaxRef.current
+      ? (value / categoryMaxRef.current) * 100
+      : 0;
 
   const handleMouseDown = (index) => (e) => {
     e.preventDefault();
@@ -199,8 +209,9 @@ const Category = () => {
         Math.max(0, (e.clientX - rect.left) / rect.width),
         1
       );
-
-      const newValue = Math.round(percentage * initialPriceRef.current);
+      const newValue = Math.round(
+        percentage * categoryMaxRef.current
+      );
 
       setPriceRange((prev) => {
         const next = [...prev];
