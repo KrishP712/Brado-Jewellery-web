@@ -122,11 +122,23 @@ const Category = () => {
     setPage(p);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
-  useEffect(() => {
-    if (priceRangeData?.max) {
-      setPriceRange([0, priceRangeData.max]);
+  const categoryPriceRange = useMemo(() => {
+    if (!products || products.length === 0) {
+      return { min: 0, max: 0 };
     }
-  }, [priceRangeData.max]);
+
+    const prices = products.map((p) => p.price);
+    return {
+      min: Math.min(...prices),
+      max: Math.max(...prices),
+    };
+  }, [products]);
+
+  useEffect(() => {
+    if (categoryPriceRange.max > 0) {
+      setPriceRange([categoryPriceRange.min, categoryPriceRange.max]);
+    }
+  }, [categoryPriceRange]);
 
   useEffect(() => {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
@@ -159,7 +171,7 @@ const Category = () => {
   const handlePrev = () => swiperRef.current?.slidePrev();
   const handleNext = () => swiperRef.current?.slideNext();
 
-  const getPercentage = (value) => (value / priceRangeData.max) * 100;
+  const getPercentage = (value) => (value / categoryPriceRange.max) * 100;
 
 
   const handleMouseDown = (index) => (e) => {
@@ -173,7 +185,7 @@ const Category = () => {
 
       const rect = sliderRef.current.getBoundingClientRect();
       const percentage = Math.min(Math.max(0, (e.clientX - rect.left) / rect.width), 1);
-      const newValue = Math.round(percentage * priceRangeData.max);
+      const newValue = Math.round(percentage * categoryPriceRange.max);
 
       setPriceRange((prev) => {
         const newRange = [...prev];
@@ -183,7 +195,7 @@ const Category = () => {
         return newRange;
       });
     },
-    [isDragging, priceRangeData]
+    [isDragging, categoryPriceRange]
   );
 
   const handleMouseUp = useCallback(() => {
@@ -288,7 +300,7 @@ const Category = () => {
 
       <div className="w-full max-w-6xl mx-auto flex justify-center gap-4 py-10">
 
-      <div className="hidden md:block w-52 bg-white border-r border-gray-200 p-6 pt-0 pl-0 sticky top-10 h-screen overflow-y-auto">
+        <div className="hidden md:block w-52 bg-white border-r border-gray-200 p-6 pt-0 pl-0 sticky top-10 h-screen overflow-y-auto">
 
           <div className="mb-4 sticky top-0 bg-white z-10 pt-4">
             <h2 className="text-xl font-semibold text-gray-900">Filters</h2>
