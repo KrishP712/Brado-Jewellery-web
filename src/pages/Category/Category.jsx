@@ -176,11 +176,14 @@ const Category = () => {
   const handlePrev = () => swiperRef.current?.slidePrev();
   const handleNext = () => swiperRef.current?.slideNext();
 
-  const getPercentage = (value) =>
-    initialPriceRef.current
-      ? (value / initialPriceRef.current) * 100
-      : 0;
-
+  const getPercentage = (value) => {
+    if (!initialPriceRef.current) return 0;
+  
+    const min = 0; 
+    const max = initialPriceRef.current; 
+  
+    return ((value - min) / (max - min)) * 100;
+  };
 
   const handleMouseDown = (index) => (e) => {
     e.preventDefault();
