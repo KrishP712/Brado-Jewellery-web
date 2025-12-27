@@ -1,5 +1,4 @@
-// src/pages/Category.jsx
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import main from "../../assets/images/earring/earringMain.jpeg";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -15,6 +14,16 @@ import Cart from "../../assets/icons/Cart";
 import { useDispatch, useSelector } from "react-redux";
 import noProduct from "../../assets/images/no-product.png";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+// Convert string → slug (helper function)
+
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+};
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const getPageNumbers = () => {
@@ -82,128 +91,138 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
 const Category = () => {
   const { categoryName } = useParams();
+  const toSlug = (text) => text?.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
+  const slug = toSlug(categoryName);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const [page, setPage] = useState(1);
+  const productState = useSelector((state) => state?.products?.products);
+  const products = productState?.products || [];
+  const availableFilters = productState?.availableFilters || [];
+  const priceRangeData = productState?.priceRange || { min: 0, max: 10000 };
+  const [selectedPriceRange, setSelectedPriceRange] = useState([0, 0]);
+  const debouncedPriceRange = useDebounce(selectedPriceRange, 500);
+  const totalPages = productState?.totalPages || 1;
+  const swiperRef = useRef(null);
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
   const [showMobileFilter, setShowMobileFilter] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({});
   const [sortBy, setSortBy] = useState("Latest");
   const [isDragging, setIsDragging] = useState(null);
 
-  const productState = useSelector((state) => state?.products?.products);
-  const products = productState?.products || [];
-  const availableFilters = productState?.availableFilters || [];
-  const priceRangeData = productState?.priceRange || { min: 0, max: 10000 };
-  const totalPages = productState?.totalPages || 1;
-
   const [priceRange, setPriceRange] = useState([0, 10000]);
-
   const sliderRef = useRef(null);
-
-  const wishlistItems = useSelector((state) => state.wishlist.wishlist || []);
-
-  // Initialize price range when category data loads
-  useEffect(() => {
-    if (priceRangeData?.min !== undefined && priceRangeData?.max !== undefined) {
-      setPriceRange([priceRangeData.min, priceRangeData.max]);
-    }
-  }, [priceRangeData.min, priceRangeData.max]);
-
-  // Fetch products whenever filters/page change
-  useEffect(() => {
-    const query = {
-      page,
-      limit: 12,
-      category: categoryName,
-      minPrice: priceRange[0],
-      maxPrice: priceRange[1],
-      sortBy,
-      ...Object.keys(selectedFilters).reduce((acc, key) => {
-        if (selectedFilters[key]?.length > 0) {
-          acc[key.toLowerCase().replace(/\s+/g, "")] = selectedFilters[key].join(",");
-        }
-        return acc;
-      }, {})
-    };
-    dispatch(getAllProducts(query));
-  }, [page, categoryName, priceRange, sortBy, selectedFilters, dispatch]);
-
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const debounceTimer = useRef(null);
+  const initialPriceRef = useRef(null);
+  const wishlistItems = useSelector((state) => state.wishlist.wishlist);
 
   const addToCart = (id) => {
     dispatch(createCartData(id));
+  }
+
+  const offerColors = {
+    "New Launch": "bg-[#533d99]",
+    "Special Deal": "bg-[#198754]",
+    "Extra 10% Off": "bg-[#d3ac0a]",
+    "Extra 15% Off": "bg-[#8db600]",
   };
 
-  const isInWishlist = (productId) => {
-    return wishlistItems.some((item) => String(item._id) === String(productId));
-  };
+  const handlePageChange = useCallback((p) => {
+    setPage(p);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
-  const handleWishlistToggle = (e, productId) => {
-    e.stopPropagation();
-    if (isInWishlist(productId)) {
-      dispatch(removeFromWishlist(productId));
-    } else {
-      dispatch(addToWishlist(productId));
+  useEffect(() => {
+    // set price ONLY ONCE per category
+    if (priceRangeData?.max && !initialPriceRef.current) {
+      initialPriceRef.current = priceRangeData.max;
+      setPriceRange([0, priceRangeData.max]);
     }
+  }, [priceRangeData]);
+
+  useEffect(() => {
+    initialPriceRef.current = null;
+  }, [categoryName]);
+
+  useEffect(() => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+
+    debounceTimer.current = setTimeout(() => {
+      const query = {
+        page,
+        limit: 12,
+        category: categoryName,
+        minPrice: priceRange[0],
+        maxPrice: priceRange[1],
+        sortBy,
+        ...Object.keys(selectedFilters).reduce((acc, f) => {
+          if (selectedFilters[f]?.length > 0) {
+            acc[f.toLowerCase().replace(/ /g, "")] = selectedFilters[f].join(",");
+          }
+          return acc;
+        }, {})
+      };
+      dispatch(getAllProducts(query));
+    }, 300);
+  }, [page, categoryName, sortBy, priceRange, selectedFilters]);
+
+
+  const handleSlideChange = (swiper) => {
+    setIsBeginning(swiper.isBeginning);
+    setIsEnd(swiper.isEnd);
   };
 
-  const handleFilterToggle = (filterName, value) => {
-    setSelectedFilters((prev) => {
-      const current = prev[filterName] || [];
-      if (current.includes(value)) {
-        return { ...prev, [filterName]: current.filter((v) => v !== value) };
-      } else {
-        return { ...prev, [filterName]: [...current, value] };
-      }
-    });
-  };
+  const handlePrev = () => swiperRef.current?.slidePrev();
+  const handleNext = () => swiperRef.current?.slideNext();
 
-  const clearAllFilters = () => {
-    setSelectedFilters({});
-    setPriceRange([priceRangeData.min || 0, priceRangeData.max || 10000]);
-  };
+  const getPercentage = (value) =>
+    initialPriceRef.current
+      ? (value / initialPriceRef.current) * 100
+      : 0;
 
-  // Price slider logic
-  const getPercentage = (value) => {
-    const total = priceRangeData.max - priceRangeData.min;
-    if (total === 0) return 0;
-    return ((value - priceRangeData.min) / total) * 100;
-  };
 
   const handleMouseDown = (index) => (e) => {
     e.preventDefault();
     setIsDragging(index);
   };
 
-  const handleMouseMove = useCallback((e) => {
-    if (isDragging === null || !sliderRef.current) return;
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (isDragging === null || !sliderRef.current) return;
 
-    const rect = sliderRef.current.getBoundingClientRect();
-    const percentage = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const totalRange = priceRangeData.max - priceRangeData.min;
-    const newValue = Math.round(priceRangeData.min + percentage * totalRange);
+      const rect = sliderRef.current.getBoundingClientRect();
+      const percentage = Math.min(Math.max(0, (e.clientX - rect.left) / rect.width), 1);
+      const newValue = Math.round(percentage * priceRangeData.max);
 
-    setPriceRange((prev) => {
-      const newRange = [...prev];
-      newRange[isDragging] = newValue;
-
-      // Ensure min <= max
-      if (isDragging === 0 && newValue > prev[1]) newRange[1] = newValue;
-      if (isDragging === 1 && newValue < prev[0]) newRange[0] = newValue;
-
-      return newRange.sort((a, b) => a - b);
-    });
-  }, [isDragging, priceRangeData]);
+      setPriceRange((prev) => {
+        const newRange = [...prev];
+        newRange[isDragging] = newValue;
+        if (isDragging === 0 && newValue > prev[1]) newRange[1] = newValue;
+        else if (isDragging === 1 && newValue < prev[0]) newRange[0] = newValue;
+        return newRange;
+      });
+    },
+    [isDragging, priceRangeData]
+  );
 
   const handleMouseUp = useCallback(() => {
-    if (isDragging !== null) {
-      setIsDragging(null);
-    }
-  }, [isDragging]);
+    setIsDragging(null);
+
+    // Fetch products AFTER finishing dragging
+    dispatch(getAllProducts({
+      page,
+      limit: 12,
+      category: categoryName,
+      minPrice: priceRange[0],
+      maxPrice: priceRange[1],
+      sortBy,
+      ...Object.keys(selectedFilters).reduce((acc, f) => {
+        acc[f.toLowerCase().replace(/ /g, "")] = selectedFilters[f]?.join(",") || "";
+        return acc;
+      }, {})
+    }));
+  }, [page, categoryName, priceRange, sortBy, selectedFilters]);
 
   useEffect(() => {
     if (isDragging !== null) {
@@ -216,268 +235,346 @@ const Category = () => {
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
+  const handleFilterToggle = (filterName, optionName) => {
+    setSelectedFilters((prev) => {
+      const current = prev[filterName] || [];
+      return {
+        ...prev,
+        [filterName]: current.includes(optionName)
+          ? current.filter((opt) => opt !== optionName)
+          : [...current, optionName],
+      };
+    });
+  };
+
+  const clearAllFilters = () => {
+    setSelectedFilters({});
+    setPriceRange([priceRangeData.min, priceRangeData.max]);
+  };
+
+  const filteredProducts = products;
+
   return (
     <>
       {/* Hero Banner */}
       <div className="flex justify-center mb-6">
-        <img src={main} alt="Category Banner" className="rounded-lg shadow-md max-h-96 object-contain w-full" />
+        <img src={main} alt="Category main" className="rounded-lg shadow-md max-h-96 object-contain" />
       </div>
 
-      <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 py-10 px-4">
-        {/* Filters Sidebar - Desktop */}
-        <div className="hidden lg:block w-64 bg-white border border-gray-200 rounded-lg p-6 sticky top-20 h-fit">
-          <div className="mb-6">
+      {/* Swiper */}
+      <div className="w-[91%] relative mx-auto mt-8">
+        <Swiper
+          className="earrings-swiper"
+          modules={[Navigation]}
+          onSwiper={(swiper) => (swiperRef.current = swiper)}
+          onSlideChange={handleSlideChange}
+          spaceBetween={20}
+          slidesPerView={2}
+          breakpoints={{
+            480: { slidesPerView: 1.3 },
+            640: { slidesPerView: 2.35 },
+          }}
+        >
+          {[main, main, main, main].map((img, i) => (
+            <SwiperSlide key={i}>
+              <img src={img} alt="" className="w-full h-full object-cover rounded-lg" />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+
+        {/* Arrows */}
+        {!isBeginning && (
+          <div
+            onClick={handlePrev}
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/70 rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+          >
+            <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </div>
+        )}
+
+        {!isEnd && (
+          <div
+            onClick={handleNext}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/70 rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+          >
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        )}
+      </div>
+
+      <div className="w-full max-w-6xl mx-auto flex justify-center gap-4 py-10">
+
+        <div className="hidden md:block w-52 bg-white border-r border-gray-200 p-6 pt-0 pl-0 sticky top-10 h-screen overflow-y-auto">
+
+          <div className="mb-4 sticky top-0 bg-white z-10 pt-4">
             <h2 className="text-xl font-semibold text-gray-900">Filters</h2>
             <div className="w-full h-px bg-gray-200 mt-3"></div>
           </div>
 
-          {/* Price Filter */}
-          <div className="mb-8">
-            <h3 className="text-base font-medium text-gray-900 mb-4">Price</h3>
+
+          <h3 className="text-base font-medium text-gray-900 mb-4">Price</h3>
+          <div className="py-2">
             <div className="relative px-2">
-              <div ref={sliderRef} className="relative h-1 bg-gray-300 rounded-full cursor-pointer">
-                {/* Filled track */}
+              <div ref={sliderRef} className="relative h-2 bg-gray-200 rounded-lg cursor-pointer">
                 <div
-                  className="absolute h-1 bg-[#b4853e] rounded-full"
+                  className="absolute h-2 bg-amber-600 rounded-lg"
                   style={{
                     left: `${getPercentage(priceRange[0])}%`,
-                    width: `${getPercentage(priceRange[1]) - getPercentage(priceRange[0])}%`,
+                    right: `${100 - getPercentage(priceRange[1])}%`,
                   }}
                 />
 
-                {/* Left Thumb */}
-                <div
-                  className="absolute w-5 h-5 bg-white border-2 border-[#b4853e] rounded-full shadow-md -top-2 cursor-grab active:cursor-grabbing"
-                  style={{ left: `${getPercentage(priceRange[0])}%`, transform: 'translateX(-50%)' }}
-                  onMouseDown={handleMouseDown(0)}
-                />
-
-                {/* Right Thumb */}
-                <div
-                  className="absolute w-5 h-5 bg-white border-2 border-[#b4853e] rounded-full shadow-md -top-2 cursor-grab active:cursor-grabbing"
-                  style={{ left: `${getPercentage(priceRange[1])}%`, transform: 'translateX(-50%)' }}
-                  onMouseDown={handleMouseDown(1)}
-                />
+                {[0, 1].map((i) => (
+                  <div
+                    key={i}
+                    className="absolute w-2.5 h-5 bg-white border border-amber-600 cursor-pointer transform -translate-x-1/2 -translate-y-1/2 shadow-md hover:shadow-lg transition-shadow"
+                    style={{
+                      left: `${getPercentage(priceRange[i])}%`,
+                      top: "50%",
+                    }}
+                    onMouseDown={handleMouseDown(i)}
+                  />
+                ))}
               </div>
 
-              <div className="flex justify-between mt-4 text-sm font-medium text-gray-700">
-                <span>₹{priceRange[0].toLocaleString()}</span>
-                <span>₹{priceRange[1].toLocaleString()}</span>
+              <div className="flex justify-between mt-3">
+                <span className="text-sm font-medium text-gray-700">
+                  ₹{priceRange[0].toLocaleString()}
+                </span>
+                <span className="text-sm font-medium text-gray-700">
+                  ₹{priceRange[1].toLocaleString()}
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Other Filters */}
+
           {availableFilters?.length > 0 ? (
             availableFilters.map((filter) => (
               <div key={filter.filterId} className="mb-8">
-                <h3 className="text-base font-medium text-gray-900 mb-4">{filter.filterName}</h3>
+                <h3 className="text-base font-medium text-gray-900 mb-4">
+                  {filter.filterName}
+                </h3>
+
                 <div className="space-y-3">
                   {filter.options.map((opt) => (
                     <label key={opt.optionId} className="flex items-center cursor-pointer">
                       <input
                         type="checkbox"
-                        className="w-4 h-4 text-[#b4853e] accent-[#b4853e] rounded focus:ring-[#b4853e]"
-                        checked={selectedFilters[filter.filterName]?.includes(opt.optionName) || false}
-                        onChange={() => handleFilterToggle(filter.filterName, opt.optionName)}
+                        className="mr-2 accent-amber-600"
+                        checked={
+                          selectedFilters[filter.filterName]?.includes(opt.optionName) ||
+                          false
+                        }
+                        onChange={() =>
+                          handleFilterToggle(filter.filterName, opt.optionName)
+                        }
                       />
-                      <span className="ml-3 text-sm text-gray-700">{opt.optionName}</span>
+                      <span className="text-sm text-gray-700">{opt.optionName}</span>
                     </label>
                   ))}
                 </div>
               </div>
             ))
           ) : (
-            <p className="text-sm text-gray-500 italic">No filters available.</p>
+            <p className="text-sm text-gray-500">No filters available.</p>
           )}
 
-          {/* Clear Button */}
-          <button
-            onClick={clearAllFilters}
-            className="w-full mt-6 py-2.5 px-4 bg-orange-50 text-orange-600 font-medium rounded-lg border border-orange-200 hover:bg-orange-100 transition"
-          >
-            Clear All Filters
-          </button>
-        </div>
 
-        {/* Products Grid */}
-        <div className="flex-1">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-medium text-gray-900">
-              {categoryName} ({products.length} products)
-            </h1>
-
-            {/* Mobile Filter Button */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
             <button
-              onClick={() => setShowMobileFilter(true)}
-              className="lg:hidden px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium"
+              onClick={clearAllFilters}
+              className="w-full px-4 py-2 text-sm font-medium text-orange-600 bg-orange-50 border border-orange-200 rounded-md hover:bg-orange-100 transition-colors"
             >
-              Filters
+              Clear All Filters
             </button>
           </div>
+        </div>
 
-          {products.length === 0 ? (
-            <div className="text-center py-20">
-              <img src={noProduct} alt="No products" className="w-48 h-48 mx-auto mb-6 opacity-70" />
-              <h2 className="text-2xl font-semibold text-gray-800 mb-2">No Products Found</h2>
-              <p className="text-gray-600 mb-6">Try adjusting your filters or search for something else.</p>
+
+
+        <div className="w-[90%]">
+          <div className="flex justify-between w-full items-center mb-6 px-6 py-4 bg-white">
+            <h1 className="text-3xl font-medium text-gray-900">
+              {categoryName.charAt(0).toUpperCase() + categoryName.slice(1)} ({filteredProducts.length} products)
+            </h1>
+          </div>
+
+          {filteredProducts.length == 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <img
+                src={noProduct}
+                alt="No Product"
+                className="w-48 h-48 mb-6 opacity-80"
+              />
+
+              <h2 className="text-xl font-semibold text-gray-800">No Product Found!</h2>
+              <p className="text-gray-500 mt-2">
+                No products found for your search. Please try another search!
+              </p>
+
               <button
                 onClick={() => navigate("/")}
-                className="px-6 py-3 bg-[#b4853e] text-white rounded-md hover:bg-[#9a7437]"
+                className="mt-6 px-6 py-2 bg-[#b88a52] text-white rounded-md hover:bg-[#a17845] transition"
               >
                 Continue Shopping
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {products.map((product) => {
-                const isWishlisted = isInWishlist(product._id);
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
+              {filteredProducts.map((product, index) => {
+                const wishlistArray = Array.isArray(wishlistItems)
+                  ? wishlistItems
+                  : wishlistItems?.product || [];
+
+                const isInWishlist = wishlistArray.some(
+                  (item) => String(item._id) === String(product._id)
+                );
+
+                // WISHLIST TOGGLE
+                const handleWishlistToggle = (e) => {
+                  e.stopPropagation();
+                  if (isInWishlist) {
+                    dispatch(removeFromWishlist(product._id));
+                  } else {
+                    dispatch(addToWishlist(product._id));
+                  }
+                };
                 return (
                   <div
-                    key={product._id}
+                    key={index}
                     onClick={() => navigate(`/product/${product.slug}`)}
-                    className="group cursor-pointer bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
+                    className="cursor-pointer"
                   >
-                    <div className="relative">
-                      <img
-                        src={product.imagesUrl?.[0] || noProduct}
-                        alt={product.title}
-                        className="w-full h-64 object-cover"
-                      />
-
-                      {/* Wishlist Button */}
-                      <button
-                        onClick={(e) => handleWishlistToggle(e, product._id)}
-                        className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <Heart
-                          className="w-5 h-5"
-                          fill={isWishlisted ? "#ef4444" : "none"}
-                          stroke={isWishlisted ? "#ef4444" : "#666"}
+                    <div className="bg-white overflow-hidden relative group hover:transition duration-300">
+                      <div className="relative">
+                        <img
+                          src={product.imagesUrl?.[0]}
+                          alt={product.title}
+                          className="w-full h-64 md:h-76 object-cover rounded-lg transition-transform duration-300"
                         />
-                      </button>
+                        <div className={`absolute top-3 right-3 transition-opacity duration-300 ${isInWishlist ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                          }`}>
+                          <button
+                            onClick={handleWishlistToggle}
+                            className={`rounded-full p-2 shadow cursor-pointer transition ${isInWishlist ? 'bg-white' : 'bg-black/40'
+                              }`}
+                          >
+                            <Heart
+                              className={`w-5 h-5 transition-colors ${isInWishlist ? "text-red-500 fill-red-500" : "text-gray-200"
+                                }`}
+                            />
 
-                      {/* Add to Cart on Hover */}
-                      <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-white">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            addToCart(product._id);
-                          }}
-                          className="w-full py-3 text-sm font-medium border-t border-gray-200 flex items-center justify-center gap-2 hover:bg-gray-50"
-                        >
-                          <Cart className="w-4 h-4" />
-                          Add to Cart
-                        </button>
-                      </div>
-                    </div>
+                          </button>
+                        </div>
 
-                    <div className="p-4">
-                      <h3 className="font-medium text-gray-900 line-clamp-2 mb-2">{product.title}</h3>
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold">₹{product.price}</span>
-                        {product.originalPrice > product.price && (
-                          <>
-                            <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
-                            <span className="text-sm text-green-600">({product.discount}% OFF)</span>
-                          </>
+
+                        <div onClick={(e) => { e.stopPropagation(); addToCart(product._id) }} className="absolute left-0 right-0 bottom-0 translate-y-full group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <button className="w-full bg-white text-gray-800 px-4 py-2 text-sm rounded-none">
+                            <div className="p-2 border border-gray-300 rounded-[1px] flex items-center justify-center gap-2">
+                              <Cart className="w-4 h-4 text-gray-600" />
+                              <span>Add To Cart</span>
+                            </div>
+                          </button>
+                        </div>
+                        {product.special && (
+                          <div className="absolute top-3 left-3">
+                            <span
+                              className={`text-white px-2 py-1 flex items-center gap-1 rounded-md text-xs font-medium ${offerColors["Special Deal"]
+                                }`}
+                            >
+                              <Heart size={12} /> Special Deal
+                            </span>
+                          </div>
                         )}
                       </div>
-                      {product.offers?.length > 0 && <OfferBadge text={product.offers[0].title} />}
+
+                      <div className="p-3">
+                        <h3 className="text-sm md:text-base font-medium line-clamp-2 truncate">
+                          {product.title}
+                        </h3>
+
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-sm md:text-base font-semibold">₹{product.price}</span>
+                          <span className="text-xs line-through text-gray-400">
+                            ₹{product.originalPrice}
+                          </span>
+                          <span className="text-xs md:text-sm text-orange-600">
+                            ({product.discount}% OFF)
+                          </span>
+                        </div>
+
+                        {product.offers?.length > 0 && (
+                          <OfferBadge text={product.offers[0]?.title} />
+                        )}
+                      </div>
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
-          )}
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
           )}
+          {showMobileFilter && (
+            <div className="fixed inset-0 z-50 bg-black/40">
+              <div className="absolute bottom-0 w-full bg-white rounded-t-xl p-4 max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between mb-4">
+                  <h2 className="text-lg font-semibold">Filters</h2>
+                  <button onClick={() => setShowMobileFilter(false)}>✕</button>
+                </div>
+
+                {availableFilters.map((filter) => (
+                  <div key={filter.filterId} className="mb-6">
+                    <h3 className="font-medium mb-2">{filter.filterName}</h3>
+                    {filter.options.map((opt) => (
+                      <label key={opt.optionId} className="flex items-center mb-2">
+                        <input
+                          type="checkbox"
+                          className="mr-2"
+                          checked={
+                            selectedFilters[filter.filterName]?.includes(opt.optionName) || false
+                          }
+                          onChange={() =>
+                            handleFilterToggle(filter.filterName, opt.optionName)
+                          }
+                        />
+                        {opt.optionName}
+                      </label>
+                    ))}
+                  </div>
+                ))}
+
+                <div className="flex gap-3 border-t pt-4">
+                  <button
+                    onClick={clearAllFilters}
+                    className="flex-1 border py-2 rounded-md"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    onClick={() => setShowMobileFilter(false)}
+                    className="flex-1 bg-[#b4853e] text-white py-2 rounded-md"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
+
+
       </div>
-
-      {/* Mobile Filter Drawer */}
-      {showMobileFilter && (
-        <div className="fixed inset-0 bg-black/50 z-50 lg:hidden" onClick={() => setShowMobileFilter(false)}>
-          <div
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6 max-h-[80vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">Filters</h2>
-              <button onClick={() => setShowMobileFilter(false)} className="text-2xl">×</button>
-            </div>
-
-            {/* Price Filter */}
-            <div className="mb-8">
-              <h3 className="font-medium mb-4">Price</h3>
-              <div className="px-2">
-                <div ref={sliderRef} className="relative h-1 bg-gray-300 rounded-full">
-                  <div
-                    className="absolute h-1 bg-[#b4853e] rounded-full"
-                    style={{
-                      left: `${getPercentage(priceRange[0])}%`,
-                      width: `${getPercentage(priceRange[1]) - getPercentage(priceRange[0])}%`,
-                    }}
-                  />
-                  <div
-                    className="absolute w-5 h-5 bg-white border-2 border-[#b4853e] rounded-full -top-2"
-                    style={{ left: `${getPercentage(priceRange[0])}%`, transform: 'translateX(-50%)' }}
-                    onMouseDown={handleMouseDown(0)}
-                  />
-                  <div
-                    className="absolute w-5 h-5 bg-white border-2 border-[#b4853e] rounded-full -top-2"
-                    style={{ left: `${getPercentage(priceRange[1])}%`, transform: 'translateX(-50%)' }}
-                    onMouseDown={handleMouseDown(1)}
-                  />
-                </div>
-                <div className="flex justify-between mt-4 text-sm font-medium">
-                  <span>₹{priceRange[0].toLocaleString()}</span>
-                  <span>₹{priceRange[1].toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Other Filters */}
-            {availableFilters.map((filter) => (
-              <div key={filter.filterId} className="mb-6">
-                <h3 className="font-medium mb-3">{filter.filterName}</h3>
-                <div className="space-y-2">
-                  {filter.options.map((opt) => (
-                    <label key={opt.optionId} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 text-[#b4853e] accent-[#b4853e] rounded"
-                        checked={selectedFilters[filter.filterName]?.includes(opt.optionName) || false}
-                        onChange={() => handleFilterToggle(filter.filterName, opt.optionName)}
-                      />
-                      <span className="ml-3 text-sm">{opt.optionName}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            ))}
-
-            <div className="flex gap-4 mt-8">
-              <button
-                onClick={clearAllFilters}
-                className="flex-1 py-3 border border-gray-300 rounded-lg font-medium"
-              >
-                Clear All
-              </button>
-              <button
-                onClick={() => setShowMobileFilter(false)}
-                className="flex-1 py-3 bg-[#b4853e] text-white rounded-lg font-medium"
-              >
-                Apply Filters
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };
