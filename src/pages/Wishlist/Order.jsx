@@ -21,8 +21,8 @@ function Order() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  // NEW: For showing timeline after cancel
-  const [orderToShowAfterCancel, setOrderToShowAfterCancel] = useState(null);
+  // NEW: Cancellation Details Modal State
+  const [selectedCancelledOrder, setSelectedCancelledOrder] = useState(null);
 
   useEffect(() => {
     dispatch(getOrderData());
@@ -30,7 +30,7 @@ function Order() {
 
   // Prevent body scroll when any modal is open
   useEffect(() => {
-    const isModalOpen = selectedOrder !== null || showReviewModal;
+    const isModalOpen = selectedOrder !== null || showReviewModal || selectedCancelledOrder !== null;
 
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
@@ -41,7 +41,7 @@ function Order() {
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [selectedOrder, showReviewModal]);
+  }, [selectedOrder, showReviewModal, selectedCancelledOrder]);
 
   // STATUS COLORS
   const getStatusColor = (status) => {
@@ -75,16 +75,33 @@ function Order() {
     );
   };
 
-  // CANCEL ORDER – Now shows timeline after success
+  // Helper: Get the status from which the order was cancelled
+  const getCancelledFromStatus = (orderItem) => {
+    const timeline = orderItem?.statusTimeline || [];
+    const cancelIndex = timeline.findIndex(step => step.title === "Cancelled");
+    
+    if (cancelIndex > 0) {
+      const previousStep = timeline[cancelIndex - 1];
+      if (previousStep?.status === "completed") {
+        return previousStep.title;
+      }
+    }
+
+    // Fallback: last completed step before cancel
+    const completedSteps = timeline.filter(step => step.status === "completed" && step.title !== "Cancelled");
+    const lastCompleted = completedSteps[completedSteps.length - 1];
+    return lastCompleted?.title || "Order Placed";
+  };
+
+  // CANCEL ORDER – Shows timeline after cancellation
   const handleCancelOrder = (orderId) => {
     dispatch(updateOrderData({ orderId: orderId, status: "Cancelled" }))
       .unwrap()
       .then(() => {
-        dispatch(getOrderData()); // Refresh list
-        // Find the freshly cancelled order and open its timeline
+        dispatch(getOrderData());
         const cancelledOrder = order.find(o => o.orderId === orderId);
         if (cancelledOrder) {
-          setSelectedOrder(cancelledOrder);
+          setSelectedOrder(cancelledOrder); // Auto-open timeline to see the update
         }
       })
       .catch((err) => console.error("Failed to cancel order:", err));
@@ -111,7 +128,7 @@ function Order() {
       .catch((err) => console.error("Failed to submit review:", err));
   };
 
-  // TIMELINE MODAL – Only change: added pt-safe padding to avoid header overlap
+  // TIMELINE MODAL – Fixed overlap with header
   const TimelineModal = ({ order, onClose }) => {
     if (!order) return null;
     return (
@@ -154,6 +171,42 @@ function Order() {
     );
   };
 
+  // NEW: Cancellation Details Modal
+  const CancellationDetailsModal = ({ order, onClose }) => {
+    if (!order) return null;
+
+    const cancelledFrom = getCancelledFromStatus(order);
+
+    return (
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg max-w-md w-full p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Cancellation Details
+            </h3>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+          <div className="text-center">
+            <p className="text-gray-700 mb-2">
+              This order was cancelled after it reached the status:
+            </p>
+            <p className="text-2xl font-bold text-red-600">
+              {cancelledFrom}
+            </p>
+            <p className="text-sm text-gray-500 mt-6">
+              Order ID: {order.orderId}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // OPEN REVIEW MODAL
   const openReviewModal = (orderId, productId) => {
     setSelectedReview({ orderId, productId });
@@ -181,6 +234,8 @@ function Order() {
               ?.pop();
             const latestStatus = latestStep?.title || "Unknown";
             const latestStatusColor = getStatusColor(latestStatus);
+
+            const isCancelled = latestStatus === "Cancelled";
 
             return (
               <div
@@ -241,6 +296,17 @@ function Order() {
                     </button>
                   )}
 
+                  {/* NEW: For cancelled orders */}
+                  {isCancelled && (
+                    <button
+                      onClick={() => setSelectedCancelledOrder(orderItem)}
+                      className="text-red-600 text-sm hover:text-red-800"
+                    >
+                      View Cancellation Details
+                    </button>
+                  )}
+
+                  {/* REVIEW BUTTON */}
                   {latestStatus === "Delivered" && (
                     <button
                       onClick={() =>
@@ -264,7 +330,13 @@ function Order() {
         onClose={() => setSelectedOrder(null)}
       />
 
-      {/* REVIEW MODAL – unchanged */}
+      {/* NEW: Cancellation Details Modal */}
+      <CancellationDetailsModal
+        order={selectedCancelledOrder}
+        onClose={() => setSelectedCancelledOrder(null)}
+      />
+
+      {/* REVIEW MODAL */}
       {showReviewModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-[#f8f8f6] p-6 rounded-lg w-96 shadow-lg border border-gray-200">
