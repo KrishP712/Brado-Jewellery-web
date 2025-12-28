@@ -5,7 +5,7 @@ import {
   updateOrderData,
 } from "../../redux/slices/order";
 import { createReviewData } from "../../redux/slices/review";
-import { X, CheckCircle } from "lucide-react";
+import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function Order() {
@@ -21,28 +21,9 @@ function Order() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  // NEW: Cancellation Success Modal State
-  const [showCancellationSuccess, setShowCancellationSuccess] = useState(false);
-  const [cancelledOrderDetails, setCancelledOrderDetails] = useState(null);
-
   useEffect(() => {
     dispatch(getOrderData());
   }, [dispatch]);
-
-  // Prevent body scroll when any modal is open
-  useEffect(() => {
-    const isModalOpen = selectedOrder !== null || showReviewModal || showCancellationSuccess;
-
-    if (isModalOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [selectedOrder, showReviewModal, showCancellationSuccess]);
 
   // STATUS COLORS
   const getStatusColor = (status) => {
@@ -76,25 +57,15 @@ function Order() {
     );
   };
 
-  // CANCEL ORDER – Now shows success modal + timeline
+  // CANCEL ORDER
   const handleCancelOrder = (orderId) => {
     dispatch(updateOrderData({ orderId: orderId, status: "Cancelled" }))
       .unwrap()
-      .then(() => {
-        dispatch(getOrderData());
-        // Find the cancelled order
-        const cancelledOrder = order.find(o => o.orderId === orderId);
-        if (cancelledOrder) {
-          setCancelledOrderDetails(cancelledOrder);
-          setShowCancellationSuccess(true);
-          // Also open timeline to see the update
-          setSelectedOrder(cancelledOrder);
-        }
-      })
+      .then(() => dispatch(getOrderData()))
       .catch((err) => console.error("Failed to cancel order:", err));
   };
 
-  // REVIEW SUBMIT
+  // ⭐ REVIEW SUBMIT – FIXED
   const handleReviewSubmit = () => {
     dispatch(
       createReviewData({
@@ -102,7 +73,7 @@ function Order() {
         orderId: selectedReview.orderId,
         rating,
         title,
-        comment: description,
+        comment: description,  // FIXED
       })
     )
       .unwrap()
@@ -115,78 +86,105 @@ function Order() {
       .catch((err) => console.error("Failed to submit review:", err));
   };
 
-  // TIMELINE MODAL – Improved for cancelled orders (like Flipkart/Amazon)
+  // TIMELINE MODAL
+  // const TimelineModal = ({ order, onClose }) => {
+  //   if (!order) return null;
+  //   return (
+  //     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+  //       <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[80vh] overflow-y-auto">
+  //         <div className="flex justify-between items-center mb-4">
+  //           <h3 className="text-lg font-semibold">
+  //             Order Timeline - {order.orderId}
+  //           </h3>
+  //           <button
+  //             onClick={onClose}
+  //             className="text-gray-500 hover:text-gray-700"
+  //           >
+  //             <X className="w-6 h-6" />
+  //           </button>
+  //         </div>
+  //         <div className="relative border-l border-gray-300 ml-4">
+  //           {order?.statusTimeline?.map((step, index) => (
+  //             <div key={index} className="mb-4 ml-6">
+  //               <div className="absolute w-3 h-3 bg-gray-300 rounded-full -left-1.5 border border-white"></div>
+  //               {step.status === "completed" && (
+  //                 <div className="absolute w-3 h-3 bg-[#b4853e] rounded-full -left-1.5 border border-white"></div>
+  //               )}
+  //               <div className="flex flex-col">
+  //                 <span className="font-medium text-gray-900">{step.title}</span>
+  //                 <span className="text-sm text-gray-500 capitalize">
+  //                   {step.status}
+  //                 </span>
+  //                 {step.timestamp && (
+  //                   <span className="text-sm text-gray-400">
+  //                     {new Date(step.timestamp).toLocaleString()}
+  //                   </span>
+  //                 )}
+  //               </div>
+  //             </div>
+  //           ))}
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // };
+
   const TimelineModal = ({ order, onClose }) => {
     if (!order) return null;
 
-    const isCancelled = order.statusTimeline?.some(step => step.title === "Cancelled" && step.status === "completed");
+    const cancelledStep = order.statusTimeline.find(
+      (step) => (step.title === "Order Cancelled" || step.title === "Cancelled") && step.status === "completed"
+    );
+
+    const orderConfirmedStep = order.statusTimeline.find(
+      (step) => step.title === "Order Confirmed" && step.status === "completed"
+    );
+
+    const filteredTimeline = order.statusTimeline.filter((step) => {
+      if (cancelledStep) {
+        if (step.title === "Order Placed") return true;
+        if (step.title === "Order Cancelled" || step.title === "Cancelled") {
+          return step.status === "completed";
+        }
+        if (!orderConfirmedStep) {
+          return false;
+        }
+        return step.status === "completed";
+      }
+      return true;
+    });
 
     return (
-      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 pt-20">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[80vh] overflow-y-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold">
-              Order Timeline - {order.orderId}
-            </h3>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700"
-            >
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold">Order Timeline - {order.OrderId}</h3>
+            <button onClick={onClose} className="text-gray-500 hover:text-gray-700" aria-label="Close timeline modal">
               <X className="w-6 h-6" />
             </button>
           </div>
-
-          {/* Special Cancelled Header like Amazon/Flipkart */}
-          {isCancelled && (
-            <div className="text-center mb-8 bg-red-50 py-6 rounded-lg">
-              <CheckCircle className="w-16 h-16 text-red-600 mx-auto mb-3" />
-              <p className="text-2xl font-bold text-red-600 mb-2">Order Cancelled</p>
-              <p className="text-gray-700">
-                Your order has been cancelled successfully.<br />
-                You will not be charged for this order.
-              </p>
-            </div>
-          )}
-
           <div className="relative border-l border-gray-300 ml-4">
-            {order?.statusTimeline?.map((step, index) => {
-              const isCompleted = step.status === "completed";
-              const isCancelledStep = step.title === "Cancelled";
-
-              return (
-                <div key={index} className="mb-6 ml-6 relative">
-                  <div
-                    className={`absolute w-4 h-4 rounded-full -left-2 border-2 border-white ${
-                      isCompleted
-                        ? isCancelledStep
-                          ? "bg-red-600"
-                          : "bg-[#b4853e]"
-                        : "bg-gray-300"
-                    }`}
-                  ></div>
-                  <div className="flex flex-col">
-                    <span className={`font-medium ${isCancelledStep ? "text-red-600" : "text-gray-900"}`}>
-                      {step.title}
+            {filteredTimeline.map((step, index) => (
+              <div key={index} className="mb-4 ml-6">
+                <div className={`absolute w-3 h-3 rounded-full -left-1.5 border border-white ${step.status === "completed" ? "bg-[#b4853e]" : "bg-gray-300"
+                  }`}></div>
+                <div className="flex flex-col">
+                  <span className="font-medium text-gray-900">{step.title}</span>
+                  <span className="text-sm text-gray-500 capitalize">{step.status}</span>
+                  {step.timestamp && (
+                    <span className="text-sm text-gray-400">
+                      {new Date(step.timestamp).toLocaleString()}
                     </span>
-                    <span className={`text-sm capitalize ${isCompleted ? "text-green-600" : "text-gray-500"}`}>
-                      {step.status}
-                    </span>
-                    {step.timestamp && (
-                      <span className="text-sm text-gray-400">
-                        {new Date(step.timestamp).toLocaleString()}
-                      </span>
-                    )}
-                  </div>
+                  )}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
       </div>
     );
   };
-
-  // OPEN REVIEW MODAL
+  // OPEN REVIEW MODAL – FIXED
   const openReviewModal = (orderId, productId) => {
     setSelectedReview({ orderId, productId });
     setShowReviewModal(true);
@@ -273,6 +271,7 @@ function Order() {
                     </button>
                   )}
 
+                  {/* ⭐ REVIEW BUTTON ONLY WHEN DELIVERED */}
                   {latestStatus === "Delivered" && (
                     <button
                       onClick={() =>
@@ -295,31 +294,6 @@ function Order() {
         order={selectedOrder}
         onClose={() => setSelectedOrder(null)}
       />
-
-      {/* Optional: Cancellation Success Modal (if you want separate from timeline) */}
-      {showCancellationSuccess && cancelledOrderDetails && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-8 text-center">
-            <CheckCircle className="w-20 h-20 text-red-600 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-red-600 mb-3">Order Cancelled</h3>
-            <p className="text-gray-700 mb-2">
-              Your order has been cancelled successfully.
-            </p>
-            <p className="text-gray-600 text-sm mb-6">
-              You will not be charged for this order.
-            </p>
-            <p className="font-medium text-gray-900">
-              {cancelledOrderDetails.orderId}
-            </p>
-            <button
-              onClick={() => setShowCancellationSuccess(false)}
-              className="mt-8 px-8 py-3 bg-[#b4853e] text-white rounded-md hover:bg-[#a07838]"
-            >
-              OK
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* REVIEW MODAL */}
       {showReviewModal && (
