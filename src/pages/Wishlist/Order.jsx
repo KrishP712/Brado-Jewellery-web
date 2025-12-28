@@ -126,7 +126,7 @@ function Order() {
 
     return (
       <div 
-        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+        className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1001] p-4"
         onClick={onClose}
       >
         <div 
@@ -275,12 +275,12 @@ function Order() {
       {/* REVIEW MODAL */}
       {showReviewModal && (
         <div 
-          className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
-          onClick={() => setShowReviewModal(false)} // Close on overlay click
+          className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000]"
+          onClick={() => setShowReviewModal(false)}
         >
           <div 
             className="bg-[#f8f8f6] p-6 rounded-lg w-96 shadow-lg border border-gray-200"
-            onClick={(e) => e.stopPropagation()} // Prevent close on inner click
+            onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-bold mb-4 text-gray-900">Write Your Review</h3>
 
