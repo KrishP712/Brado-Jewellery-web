@@ -25,6 +25,19 @@ function Order() {
     dispatch(getOrderData());
   }, [dispatch]);
 
+  // Prevent body scroll when any modal is open
+  useEffect(() => {
+    if (selectedOrder || showReviewModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [selectedOrder, showReviewModal]);
+
   // STATUS COLORS
   const getStatusColor = (status) => {
     switch (status) {
@@ -65,7 +78,7 @@ function Order() {
       .catch((err) => console.error("Failed to cancel order:", err));
   };
 
-  // ⭐ REVIEW SUBMIT – FIXED
+  // REVIEW SUBMIT
   const handleReviewSubmit = () => {
     dispatch(
       createReviewData({
@@ -73,7 +86,7 @@ function Order() {
         orderId: selectedReview.orderId,
         rating,
         title,
-        comment: description,  // FIXED
+        comment: description,
       })
     )
       .unwrap()
@@ -85,49 +98,6 @@ function Order() {
       })
       .catch((err) => console.error("Failed to submit review:", err));
   };
-
-  // TIMELINE MODAL
-  // const TimelineModal = ({ order, onClose }) => {
-  //   if (!order) return null;
-  //   return (
-  //     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-  //       <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[80vh] overflow-y-auto">
-  //         <div className="flex justify-between items-center mb-4">
-  //           <h3 className="text-lg font-semibold">
-  //             Order Timeline - {order.orderId}
-  //           </h3>
-  //           <button
-  //             onClick={onClose}
-  //             className="text-gray-500 hover:text-gray-700"
-  //           >
-  //             <X className="w-6 h-6" />
-  //           </button>
-  //         </div>
-  //         <div className="relative border-l border-gray-300 ml-4">
-  //           {order?.statusTimeline?.map((step, index) => (
-  //             <div key={index} className="mb-4 ml-6">
-  //               <div className="absolute w-3 h-3 bg-gray-300 rounded-full -left-1.5 border border-white"></div>
-  //               {step.status === "completed" && (
-  //                 <div className="absolute w-3 h-3 bg-[#b4853e] rounded-full -left-1.5 border border-white"></div>
-  //               )}
-  //               <div className="flex flex-col">
-  //                 <span className="font-medium text-gray-900">{step.title}</span>
-  //                 <span className="text-sm text-gray-500 capitalize">
-  //                   {step.status}
-  //                 </span>
-  //                 {step.timestamp && (
-  //                   <span className="text-sm text-gray-400">
-  //                     {new Date(step.timestamp).toLocaleString()}
-  //                   </span>
-  //                 )}
-  //               </div>
-  //             </div>
-  //           ))}
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // };
 
   const TimelineModal = ({ order, onClose }) => {
     if (!order) return null;
@@ -155,8 +125,14 @@ function Order() {
     });
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[80vh] overflow-y-auto">
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        onClick={onClose} // Close when clicking overlay
+      >
+        <div 
+          className="bg-white rounded-lg max-w-md w-full p-6 max-h-[80vh] overflow-y-auto"
+          onClick={(e) => e.stopPropagation()} // Prevent close when clicking inside
+        >
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Order Timeline - {order.OrderId}</h3>
             <button onClick={onClose} className="text-gray-500 hover:text-gray-700" aria-label="Close timeline modal">
@@ -184,7 +160,8 @@ function Order() {
       </div>
     );
   };
-  // OPEN REVIEW MODAL – FIXED
+
+  // OPEN REVIEW MODAL
   const openReviewModal = (orderId, productId) => {
     setSelectedReview({ orderId, productId });
     setShowReviewModal(true);
@@ -271,7 +248,7 @@ function Order() {
                     </button>
                   )}
 
-                  {/* ⭐ REVIEW BUTTON ONLY WHEN DELIVERED */}
+                  {/* REVIEW BUTTON ONLY WHEN DELIVERED */}
                   {latestStatus === "Delivered" && (
                     <button
                       onClick={() =>
@@ -297,8 +274,14 @@ function Order() {
 
       {/* REVIEW MODAL */}
       {showReviewModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-[#f8f8f6] p-6 rounded-lg w-96 shadow-lg border border-gray-200">
+        <div 
+          className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+          onClick={() => setShowReviewModal(false)} // Close on overlay click
+        >
+          <div 
+            className="bg-[#f8f8f6] p-6 rounded-lg w-96 shadow-lg border border-gray-200"
+            onClick={(e) => e.stopPropagation()} // Prevent close on inner click
+          >
             <h3 className="text-lg font-bold mb-4 text-gray-900">Write Your Review</h3>
 
             <label className="block mb-2 text-sm text-gray-600">Rating:</label>
