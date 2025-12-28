@@ -5,7 +5,7 @@ import {
   updateOrderData,
 } from "../../redux/slices/order";
 import { createReviewData } from "../../redux/slices/review";
-import { X } from "lucide-react";
+import { X, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function Order() {
@@ -21,8 +21,9 @@ function Order() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  // NEW: Cancellation Details Modal State
-  const [selectedCancelledOrder, setSelectedCancelledOrder] = useState(null);
+  // NEW: Cancellation Success Modal State
+  const [showCancellationSuccess, setShowCancellationSuccess] = useState(false);
+  const [cancelledOrderDetails, setCancelledOrderDetails] = useState(null);
 
   useEffect(() => {
     dispatch(getOrderData());
@@ -30,7 +31,7 @@ function Order() {
 
   // Prevent body scroll when any modal is open
   useEffect(() => {
-    const isModalOpen = selectedOrder !== null || showReviewModal || selectedCancelledOrder !== null;
+    const isModalOpen = selectedOrder !== null || showReviewModal || showCancellationSuccess;
 
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
@@ -41,7 +42,7 @@ function Order() {
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [selectedOrder, showReviewModal, selectedCancelledOrder]);
+  }, [selectedOrder, showReviewModal, showCancellationSuccess]);
 
   // STATUS COLORS
   const getStatusColor = (status) => {
@@ -75,33 +76,19 @@ function Order() {
     );
   };
 
-  // Helper: Get the status from which the order was cancelled
-  const getCancelledFromStatus = (orderItem) => {
-    const timeline = orderItem?.statusTimeline || [];
-    const cancelIndex = timeline.findIndex(step => step.title === "Cancelled");
-    
-    if (cancelIndex > 0) {
-      const previousStep = timeline[cancelIndex - 1];
-      if (previousStep?.status === "completed") {
-        return previousStep.title;
-      }
-    }
-
-    // Fallback: last completed step before cancel
-    const completedSteps = timeline.filter(step => step.status === "completed" && step.title !== "Cancelled");
-    const lastCompleted = completedSteps[completedSteps.length - 1];
-    return lastCompleted?.title || "Order Placed";
-  };
-
-  // CANCEL ORDER – Shows timeline after cancellation
+  // CANCEL ORDER – Now shows success modal + timeline
   const handleCancelOrder = (orderId) => {
     dispatch(updateOrderData({ orderId: orderId, status: "Cancelled" }))
       .unwrap()
       .then(() => {
         dispatch(getOrderData());
+        // Find the cancelled order
         const cancelledOrder = order.find(o => o.orderId === orderId);
         if (cancelledOrder) {
-          setSelectedOrder(cancelledOrder); // Auto-open timeline to see the update
+          setCancelledOrderDetails(cancelledOrder);
+          setShowCancellationSuccess(true);
+          // Also open timeline to see the update
+          setSelectedOrder(cancelledOrder);
         }
       })
       .catch((err) => console.error("Failed to cancel order:", err));
@@ -128,13 +115,16 @@ function Order() {
       .catch((err) => console.error("Failed to submit review:", err));
   };
 
-  // TIMELINE MODAL – Fixed overlap with header
+  // TIMELINE MODAL – Improved for cancelled orders (like Flipkart/Amazon)
   const TimelineModal = ({ order, onClose }) => {
     if (!order) return null;
+
+    const isCancelled = order.statusTimeline?.some(step => step.title === "Cancelled" && step.status === "completed");
+
     return (
       <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 pt-20">
         <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[80vh] overflow-y-auto">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold">
               Order Timeline - {order.orderId}
             </h3>
@@ -145,62 +135,51 @@ function Order() {
               <X className="w-6 h-6" />
             </button>
           </div>
+
+          {/* Special Cancelled Header like Amazon/Flipkart */}
+          {isCancelled && (
+            <div className="text-center mb-8 bg-red-50 py-6 rounded-lg">
+              <CheckCircle className="w-16 h-16 text-red-600 mx-auto mb-3" />
+              <p className="text-2xl font-bold text-red-600 mb-2">Order Cancelled</p>
+              <p className="text-gray-700">
+                Your order has been cancelled successfully.<br />
+                You will not be charged for this order.
+              </p>
+            </div>
+          )}
+
           <div className="relative border-l border-gray-300 ml-4">
-            {order?.statusTimeline?.map((step, index) => (
-              <div key={index} className="mb-4 ml-6">
-                <div className="absolute w-3 h-3 bg-gray-300 rounded-full -left-1.5 border border-white"></div>
-                {step.status === "completed" && (
-                  <div className="absolute w-3 h-3 bg-[#b4853e] rounded-full -left-1.5 border border-white"></div>
-                )}
-                <div className="flex flex-col">
-                  <span className="font-medium text-gray-900">{step.title}</span>
-                  <span className="text-sm text-gray-500 capitalize">
-                    {step.status}
-                  </span>
-                  {step.timestamp && (
-                    <span className="text-sm text-gray-400">
-                      {new Date(step.timestamp).toLocaleString()}
+            {order?.statusTimeline?.map((step, index) => {
+              const isCompleted = step.status === "completed";
+              const isCancelledStep = step.title === "Cancelled";
+
+              return (
+                <div key={index} className="mb-6 ml-6 relative">
+                  <div
+                    className={`absolute w-4 h-4 rounded-full -left-2 border-2 border-white ${
+                      isCompleted
+                        ? isCancelledStep
+                          ? "bg-red-600"
+                          : "bg-[#b4853e]"
+                        : "bg-gray-300"
+                    }`}
+                  ></div>
+                  <div className="flex flex-col">
+                    <span className={`font-medium ${isCancelledStep ? "text-red-600" : "text-gray-900"}`}>
+                      {step.title}
                     </span>
-                  )}
+                    <span className={`text-sm capitalize ${isCompleted ? "text-green-600" : "text-gray-500"}`}>
+                      {step.status}
+                    </span>
+                    {step.timestamp && (
+                      <span className="text-sm text-gray-400">
+                        {new Date(step.timestamp).toLocaleString()}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // NEW: Cancellation Details Modal
-  const CancellationDetailsModal = ({ order, onClose }) => {
-    if (!order) return null;
-
-    const cancelledFrom = getCancelledFromStatus(order);
-
-    return (
-      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg max-w-md w-full p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Cancellation Details
-            </h3>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-          <div className="text-center">
-            <p className="text-gray-700 mb-2">
-              This order was cancelled after it reached the status:
-            </p>
-            <p className="text-2xl font-bold text-red-600">
-              {cancelledFrom}
-            </p>
-            <p className="text-sm text-gray-500 mt-6">
-              Order ID: {order.orderId}
-            </p>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -234,8 +213,6 @@ function Order() {
               ?.pop();
             const latestStatus = latestStep?.title || "Unknown";
             const latestStatusColor = getStatusColor(latestStatus);
-
-            const isCancelled = latestStatus === "Cancelled";
 
             return (
               <div
@@ -296,17 +273,6 @@ function Order() {
                     </button>
                   )}
 
-                  {/* NEW: For cancelled orders */}
-                  {isCancelled && (
-                    <button
-                      onClick={() => setSelectedCancelledOrder(orderItem)}
-                      className="text-red-600 text-sm hover:text-red-800"
-                    >
-                      View Cancellation Details
-                    </button>
-                  )}
-
-                  {/* REVIEW BUTTON */}
                   {latestStatus === "Delivered" && (
                     <button
                       onClick={() =>
@@ -330,11 +296,30 @@ function Order() {
         onClose={() => setSelectedOrder(null)}
       />
 
-      {/* NEW: Cancellation Details Modal */}
-      <CancellationDetailsModal
-        order={selectedCancelledOrder}
-        onClose={() => setSelectedCancelledOrder(null)}
-      />
+      {/* Optional: Cancellation Success Modal (if you want separate from timeline) */}
+      {showCancellationSuccess && cancelledOrderDetails && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-8 text-center">
+            <CheckCircle className="w-20 h-20 text-red-600 mx-auto mb-4" />
+            <h3 className="text-2xl font-bold text-red-600 mb-3">Order Cancelled</h3>
+            <p className="text-gray-700 mb-2">
+              Your order has been cancelled successfully.
+            </p>
+            <p className="text-gray-600 text-sm mb-6">
+              You will not be charged for this order.
+            </p>
+            <p className="font-medium text-gray-900">
+              {cancelledOrderDetails.orderId}
+            </p>
+            <button
+              onClick={() => setShowCancellationSuccess(false)}
+              className="mt-8 px-8 py-3 bg-[#b4853e] text-white rounded-md hover:bg-[#a07838]"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* REVIEW MODAL */}
       {showReviewModal && (
