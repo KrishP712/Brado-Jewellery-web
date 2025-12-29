@@ -16,6 +16,7 @@ import PhoneIcon from "../../assets/icons/PhoneIcon";
 import ShieldIcon from "../../assets/icons/ShieldIcon";
 import Heart from "../../assets/icons/Heart";
 import SettingsCogIcon from "../../assets/icons/SettingsCogIcon";
+import StarIcon from "../../assets/icons/StarIcon";
 
 import "swiper/css";
 import "swiper/css/navigation";
