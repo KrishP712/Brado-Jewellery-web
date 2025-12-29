@@ -634,11 +634,118 @@ export default function ShowProduct() {
                   "Avoid contact with water, perfumes, and cosmetics. Store in zip-lock plastic pouches or butter paper after use. Do not store in jewellery boxes or velvet boxes.",
               },
               {
-                key:"Review & Ratings",
-                title:"Review & Ratings",
-                icon:StarIcon,
-                content: console.log(product)
-              }
+                key: "reviews",
+                title: "Review & Ratings",
+                icon: StarIcon,
+                content: (
+                  <div className="space-y-6">
+                    {/* Overall Rating Summary */}
+                    <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
+                      <div className="text-center">
+                        <div className="text-4xl font-bold text-gray-900">
+                          {product?.[0]?.averageRating || 0}
+                        </div>
+                        <div className="flex gap-1 mt-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <svg
+                              key={star}
+                              className={`w-5 h-5 ${star <= (product?.[0]?.averageRating || 0)
+                                  ? "text-[#b4853e] fill-current"
+                                  : "text-gray-300"
+                                }`}
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                            </svg>
+                          ))}
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Based on {product?.[0]?.totalReviews || 0} reviews
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Individual Reviews */}
+                    {product?.[0]?.reviews?.length > 0 ? (
+                      <div className="space-y-6">
+                        {product[0].reviews.map((review, index) => (
+                          <div key={review._id || index} className="border-b border-gray-100 pb-6 last:border-0">
+                            <div className="flex items-start gap-4">
+                              {/* User Avatar or Initial */}
+                              <div className="w-12 h-12 bg-[#b4853e] text-white rounded-full flex items-center justify-center font-semibold text-lg">
+                                {review.user?.name?.charAt(0).toUpperCase() || "U"}
+                              </div>
+
+                              <div className="flex-1">
+                                {/* User Name & Date */}
+                                <div className="flex justify-between items-start mb-2">
+                                  <div>
+                                    <h4 className="font-medium text-gray-900">
+                                      {review.user?.name || "Anonymous User"}
+                                    </h4>
+                                    <p className="text-xs text-gray-500">
+                                      {review.reviewDate
+                                        ? new Date(review.reviewDate).toLocaleDateString("en-US", {
+                                          year: "numeric",
+                                          month: "short",
+                                          day: "numeric",
+                                        })
+                                        : "Recently"}
+                                    </p>
+                                  </div>
+
+                                  {/* Star Rating */}
+                                  <div className="flex gap-1">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      <svg
+                                        key={star}
+                                        className={`w-4 h-4 ${star <= review.rating
+                                            ? "text-[#b4853e] fill-current"
+                                            : "text-gray-300"
+                                          }`}
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                      </svg>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                {/* Review Title & Comment */}
+                                {review.title && (
+                                  <h5 className="font-medium text-gray-800 mt-2">{review.title}</h5>
+                                )}
+                                <p className="text-sm text-gray-600 leading-relaxed mt-1">
+                                  {review.comment}
+                                </p>
+
+                                {/* Review Images (if any) */}
+                                {review.image && review.image.length > 0 && (
+                                  <div className="flex gap-2 mt-3">
+                                    {review.image.map((img, i) => (
+                                      <img
+                                        key={i}
+                                        src={img}
+                                        alt={`Review image ${i + 1}`}
+                                        className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                                      />
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <StarIcon className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                        <p>No reviews yet. Be the first to review this product!</p>
+                      </div>
+                    )}
+                  </div>
+                ),
+              },
             ].map(({ key, title, icon: Icon, content }) => (
               <div key={key} className="border-t border-gray-200 my-4 pt-4">
                 {/* Header Section */}
