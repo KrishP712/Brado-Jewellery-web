@@ -632,6 +632,12 @@ export default function ShowProduct() {
                   product?.[0]?.careInstructions ||
                   "Avoid contact with water, perfumes, and cosmetics. Store in zip-lock plastic pouches or butter paper after use. Do not store in jewellery boxes or velvet boxes.",
               },
+              {
+                key:"Review & Ratings",
+                title:"Review & Ratings",
+                icon:StarIcon,
+                content: console.log(product)
+              }
             ].map(({ key, title, icon: Icon, content }) => (
               <div key={key} className="border-t border-gray-200 my-4 pt-4">
                 {/* Header Section */}
