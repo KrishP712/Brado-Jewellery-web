@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 
-const PaymentStep = ({ cartData, products, handleOrder, prevStep }) => {
+const PaymentStep = ({ cartData, products, handleOrder, prevStep, nextStep }) => {
   const totalItems = products?.length || 0;
 
   // Charges as per your screenshot

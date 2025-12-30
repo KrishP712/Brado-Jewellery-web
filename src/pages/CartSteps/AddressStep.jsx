@@ -19,7 +19,8 @@ const AddressStep = ({
   products,
   totalItems,
   dispatch,
-  getAddressData
+  getAddressData,
+  nextStep,
 }) => {
   const [localErrors, setLocalErrors] = useState({});
 
@@ -151,9 +152,8 @@ const AddressStep = ({
                     {addressData.map((item, index) => (
                       <label
                         key={item._id || index}
-                        className={`flex items-start p-4 border rounded-lg cursor-pointer hover:shadow-sm transition-all ${
-                          selectedAddress?._id === item._id ? "border-[#b4853e]" : "border-gray-200"
-                        }`}
+                        className={`flex items-start p-4 border rounded-lg cursor-pointer hover:shadow-sm transition-all ${selectedAddress?._id === item._id ? "border-[#b4853e]" : "border-gray-200"
+                          }`}
                       >
                         <input
                           type="radio"
@@ -227,9 +227,8 @@ const AddressStep = ({
                 name="contactName"
                 value={formData.contactName || ''}
                 onChange={handleChangeWithClearError}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                  localErrors.contactName ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.contactName ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                  }`}
               />
               {localErrors.contactName && <p className="text-red-500 text-xs mt-1">{localErrors.contactName}</p>}
             </div>
@@ -244,9 +243,8 @@ const AddressStep = ({
                 value={formData.contactNo || ''}
                 onChange={handleChangeWithClearError}
                 maxLength="10"
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                  localErrors.contactNo ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.contactNo ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                  }`}
               />
               {localErrors.contactNo && <p className="text-red-500 text-xs mt-1">{localErrors.contactNo}</p>}
             </div>
@@ -263,9 +261,8 @@ const AddressStep = ({
               placeholder=" "
             />
             <label
-              className={`absolute left-3 bg-white px-1 pointer-events-none transition-all ${
-                formData.email ? "-top-2 text-xs text-[#b4853e]" : "top-3 text-sm text-gray-500 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#b4853e]"
-              }`}
+              className={`absolute left-3 bg-white px-1 pointer-events-none transition-all ${formData.email ? "-top-2 text-xs text-[#b4853e]" : "top-3 text-sm text-gray-500 peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#b4853e]"
+                }`}
             >
               Email Id (Optional)
             </label>
@@ -282,9 +279,8 @@ const AddressStep = ({
                 name="addressLine1"
                 value={formData.addressLine1 || ''}
                 onChange={handleChangeWithClearError}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                  localErrors.addressLine1 ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.addressLine1 ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                  }`}
               />
               {localErrors.addressLine1 && <p className="text-red-500 text-xs mt-1">{localErrors.addressLine1}</p>}
             </div>
@@ -323,9 +319,8 @@ const AddressStep = ({
                 name="city"
                 value={formData.city || ''}
                 onChange={handleChangeWithClearError}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                  localErrors.city ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.city ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                  }`}
               />
               {localErrors.city && <p className="text-red-500 text-xs mt-1">{localErrors.city}</p>}
             </div>
@@ -343,9 +338,8 @@ const AddressStep = ({
                 value={formData.pinCode || ''}
                 onChange={handleChangeWithClearError}
                 maxLength="6"
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                  localErrors.pinCode ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.pinCode ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                  }`}
               />
               {localErrors.pinCode && <p className="text-red-500 text-xs mt-1">{localErrors.pinCode}</p>}
             </div>
@@ -359,9 +353,8 @@ const AddressStep = ({
                 name="state"
                 value={formData.state || ''}
                 onChange={handleChangeWithClearError}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                  localErrors.state ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
-                }`}
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 transition-all ${localErrors.state ? "border-red-500" : "border-gray-300 focus:border-[#b4853e]"
+                  }`}
               />
               {localErrors.state && <p className="text-red-500 text-xs mt-1">{localErrors.state}</p>}
             </div>
@@ -427,28 +420,28 @@ const AddressStep = ({
 
       {/* Right Column: Order Summary */}
       <div className="pt-4">
-          <h3 className="mb-4 text-[16px]">Order Summary <span className="text-[#696661] text-[14px]">(items {totalItems})</span></h3>
-          <div className="space-y-2 mb-4">
-            <div className="flex justify-between"><span className="text-[#696661] text-[14px]">Total MRP</span><span>₹{cartData?.total_mrp_amount || totals.totalMRP}</span></div>
-            <div className="flex justify-between text-green-600"><span className="text-[#696661] text-[14px]">Discount</span><span>-₹{cartData?.total_sale_discount || totals.totalDiscount}</span></div>
-            {cartData?.coupon_discount > 0 && (
-              <div className="flex justify-between text-green-600">
-                <span className="text-[#696661] text-[14px]">Coupon Discount</span>
-                <span>-₹{cartData.coupon_discount.toFixed(2)}</span>
-              </div>
-            )}
-          </div>
-          <div className="border-t pt-2 mb-6">
-            <div className="flex justify-between text-lg">
-              <span className="text-[16px]">{cartData?.coupon_discount > 0 ? "Grand Total" : "Total"}</span>
-              <span className="text-[16px] font-semibold">₹{cartData?.total_amount?.toFixed(2) || totals.totalPrice}</span>
+        <h3 className="mb-4 text-[16px]">Order Summary <span className="text-[#696661] text-[14px]">(items {totalItems})</span></h3>
+        <div className="space-y-2 mb-4">
+          <div className="flex justify-between"><span className="text-[#696661] text-[14px]">Total MRP</span><span>₹{cartData?.total_mrp_amount || totals.totalMRP}</span></div>
+          <div className="flex justify-between text-green-600"><span className="text-[#696661] text-[14px]">Discount</span><span>-₹{cartData?.total_sale_discount || totals.totalDiscount}</span></div>
+          {cartData?.coupon_discount > 0 && (
+            <div className="flex justify-between text-green-600">
+              <span className="text-[#696661] text-[14px]">Coupon Discount</span>
+              <span>-₹{cartData.coupon_discount.toFixed(2)}</span>
             </div>
-          </div>
-          <button onClick={nextStep} className="w-full bg-[#b4853e] text-white py-3 mb-4">Check Out</button>
-          <button onClick={() => navigate("/")} className="w-full text-[#b4853e] py-2 flex items-center justify-center gap-2">
-            <ArrowLeft className="w-4 h-4" /> Continue Shopping
-          </button>
+          )}
         </div>
+        <div className="border-t pt-2 mb-6">
+          <div className="flex justify-between text-lg">
+            <span className="text-[16px]">{cartData?.coupon_discount > 0 ? "Grand Total" : "Total"}</span>
+            <span className="text-[16px] font-semibold">₹{cartData?.total_amount?.toFixed(2) || totals.totalPrice}</span>
+          </div>
+        </div>
+        <button onClick={nextStep} className="w-full bg-[#b4853e] text-white py-3 mb-4">Check Out</button>
+        <button onClick={() => navigate("/")} className="w-full text-[#b4853e] py-2 flex items-center justify-center gap-2">
+          <ArrowLeft className="w-4 h-4" /> Continue Shopping
+        </button>
+      </div>
     </div>
   );
 };
