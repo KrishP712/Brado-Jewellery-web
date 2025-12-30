@@ -2,14 +2,14 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 
-const PaymentStep = ({ cartData, products, handleOrder, prevStep, nextStep }) => {
+const PaymentStep = ({ cartData, products, handleOrder, prevStep, nextStep, navigate }) => {
   const totalItems = products?.length || 0;
 
-  // Charges as per your screenshot
+  // Fixed Charges
   const SHIPPING_FEE = 70;
   const COD_CHARGE = 55;
 
-  // Calculate MRP & Discount safely
+  // Calculate MRP, Discount, and Subtotal from products
   const calculateTotals = () => {
     if (!Array.isArray(products) || products.length === 0) {
       return { totalMRP: 0, totalDiscount: 0, subtotal: 0 };
@@ -38,18 +38,26 @@ const PaymentStep = ({ cartData, products, handleOrder, prevStep, nextStep }) =>
 
   const { totalMRP, totalDiscount, subtotal } = calculateTotals();
 
-  // Payment method state (default: Online)
+  // Payment method state
   const [paymentMethod, setPaymentMethod] = useState('online');
 
-  // Final total
-  const baseSubtotal = parseFloat(subtotal);
+  // Base subtotal from products
+  const baseSubtotal = parseFloat(subtotal) || 0;
+
+  // Final total calculation including shipping and COD
   const finalTotal = paymentMethod === 'cod'
     ? baseSubtotal + SHIPPING_FEE + COD_CHARGE
     : baseSubtotal + SHIPPING_FEE;
 
+  // Trigger order placement
   const placeOrder = () => {
     const method = paymentMethod === 'cod' ? 'COD' : 'PREPAID';
-    handleOrder(method);
+    handleOrder({
+      paymentMethod: method,
+      shippingFee: SHIPPING_FEE,
+      codCharge: paymentMethod === 'cod' ? COD_CHARGE : 0,
+      grandTotal: finalTotal,
+    });
   };
 
   return (
@@ -120,27 +128,69 @@ const PaymentStep = ({ cartData, products, handleOrder, prevStep, nextStep }) =>
           </div>
         </div>
 
-        {/* Right Column: Order Summary - Aligned perfectly with left sections */}
+        {/* Right Column: Order Summary */}
         <div className="pt-4">
-          <h3 className="mb-4 text-[16px]">Order Summary <span className="text-[#696661] text-[14px]">(items {totalItems})</span></h3>
+          <h3 className="mb-4 text-[16px]">
+            Order Summary <span className="text-[#696661] text-[14px]">(items {totalItems})</span>
+          </h3>
           <div className="space-y-2 mb-4">
-            <div className="flex justify-between"><span className="text-[#696661] text-[14px]">Total MRP</span><span>₹{cartData?.total_mrp_amount || totals.totalMRP}</span></div>
-            <div className="flex justify-between text-green-600"><span className="text-[#696661] text-[14px]">Discount</span><span>-₹{cartData?.total_sale_discount || totals.totalDiscount}</span></div>
+            <div className="flex justify-between">
+              <span className="text-[#696661] text-[14px]">Total MRP</span>
+              <span>₹{cartData?.total_mrp_amount || totalMRP}</span>
+            </div>
+            <div className="flex justify-between text-green-600">
+              <span className="text-[#696661] text-[14px]">Discount</span>
+              <span>-₹{cartData?.total_sale_discount || totalDiscount}</span>
+            </div>
             {cartData?.coupon_discount > 0 && (
               <div className="flex justify-between text-green-600">
                 <span className="text-[#696661] text-[14px]">Coupon Discount</span>
                 <span>-₹{cartData.coupon_discount.toFixed(2)}</span>
               </div>
             )}
+
+            {/* Subtotal (after product discounts) */}
+            <div className="flex justify-between border-t pt-2">
+              <span className="text-[#696661] text-[14px]">Subtotal</span>
+              <span>₹{baseSubtotal.toFixed(2)}</span>
+            </div>
+
+            {/* Shipping Fee */}
+            <div className="flex justify-between">
+              <span className="text-[#696661] text-[14px]">Shipping</span>
+              <span>₹{SHIPPING_FEE}</span>
+            </div>
+
+            {/* COD Charge - Only show if COD selected */}
+            {paymentMethod === 'cod' && (
+              <div className="flex justify-between text-[#b4853e]">
+                <span className="text-[#696661] text-[14px]">COD Charges</span>
+                <span>+₹{COD_CHARGE}</span>
+              </div>
+            )}
           </div>
+
+          {/* Grand Total */}
           <div className="border-t pt-2 mb-6">
             <div className="flex justify-between text-lg">
-              <span className="text-[16px]">{cartData?.coupon_discount > 0 ? "Grand Total" : "Total"}</span>
-              <span className="text-[16px] font-semibold">₹{cartData?.total_amount?.toFixed(2) || totals.totalPrice}</span>
+              <span className="text-[16px]">Grand Total</span>
+              <span className="text-[16px] font-semibold">₹{finalTotal.toFixed(2)}</span>
             </div>
           </div>
-          <button onClick={nextStep} className="w-full bg-[#b4853e] text-white py-3 mb-4">Check Out</button>
-          <button onClick={() => navigate("/")} className="w-full text-[#b4853e] py-2 flex items-center justify-center gap-2">
+
+          {/* Place Order Button */}
+          <button
+            onClick={placeOrder}
+            className="w-full bg-[#b4853e] text-white py-3 mb-4 font-medium hover:bg-[#c0924e] transition-colors"
+          >
+            Place Order (₹{finalTotal.toFixed(2)})
+          </button>
+
+          {/* Continue Shopping */}
+          <button
+            onClick={() => navigate("/")}
+            className="w-full text-[#b4853e] py-2 flex items-center justify-center gap-2 hover:text-[#c0924e] transition-colors"
+          >
             <ArrowLeft className="w-4 h-4" /> Continue Shopping
           </button>
         </div>
