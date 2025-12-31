@@ -15,7 +15,7 @@ const ShoppingCartStep = ({
   handleIncreaseQuantity,
   handleDecreaseQuantity,
   handleRemoveProduct,
-  handleAddToWishlist = () => {}
+  handleAddToWishlist = () => { }
 }) => {
   const totalItems = products.length;
 
@@ -82,13 +82,37 @@ const ShoppingCartStep = ({
                       </>
                     )}
                   </div>
-                  <p className="text-[12px] text-gray-600 mt-1">Category: {item.category}</p>
                   {item.stock < 10 && <p className="text-[12px] text-red-600 mt-1">Only {item.stock} left!</p>}
 
-                  {item.offers?.[0] && item.quantity >= item.offers[0].minQuantity && item.offers[0].active && (
-                    <p className="text-green-600 text-sm mt-1 font-medium">
-                      Bulk Deal Discount: ₹{item.itemOfferDiscount?.toFixed(2) || 0}
+                  {item.itemOfferDiscount > 0 && (
+                    <p className="text-green-600 text-xs md:text-sm font-medium mb-2 md:mb-3">
+                      Bulk Deal Discount: ₹{item.itemOfferDiscount}
                     </p>
+                  )}
+
+                  {item.offers?.length > 0 && !item.itemOfferDiscount && (
+                    <div className="mt-2 md:mt-3 flex flex-wrap gap-2">
+                      {item.offers.map((offer, index) => {
+                        // Hide inactive offers
+                        if (!offer.active) return null;
+
+                        return (
+                          <div
+                            key={index}
+                            className="inline-flex items-center gap-1.5 md:gap-2 bg-amber-50 border border-amber-200 rounded-md px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm"
+                          >
+                            <BadgePercent className="w-3 h-3 md:w-4 md:h-4 text-amber-700" />
+                            <span className="font-medium text-gray-800">
+                              {offer.title}
+                            </span>
+                            <ChevronRight
+                              className="w-3 h-3 md:w-3.5 md:h-3.5 text-amber-700"
+                              strokeWidth={2.5}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
 
