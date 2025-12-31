@@ -55,6 +55,7 @@ const ShoppingCartStep = ({
         </h2>
 
         {products.map((item) => (
+          console.log(item),
           <div key={item.productId || item._id} className="border-b border-gray-300 pb-[15px] mb-4 relative">
             <div className="absolute top-2 right-2 md:flex space-x-2 hidden">
               <div className="text-[13px] text-gray-900 cursor-pointer" onClick={() => handleAddToWishlist(item.productId)}>
