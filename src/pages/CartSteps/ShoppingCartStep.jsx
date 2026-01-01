@@ -202,6 +202,14 @@ const ShoppingCartStep = ({
               </div>
             )}
           </div>
+          <div className="border-t pt-2 mb-6">
+            <div className="flex justify-between text-lg">
+              <span className="text-[16px] font-semibold">Grand Total</span>
+              <span className="text-[16px] font-semibold">
+                ₹{totals.grandTotal}
+              </span>
+            </div>
+          </div>
 
           <button onClick={nextStep} className="w-full bg-[#b4853e] text-white py-3 mb-4">Check Out</button>
           <button onClick={() => navigate("/")} className="w-full text-[#b4853e] py-2 flex items-center justify-center gap-2">
