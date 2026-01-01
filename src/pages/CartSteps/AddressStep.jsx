@@ -24,35 +24,6 @@ const AddressStep = ({
 }) => {
   const [localErrors, setLocalErrors] = useState({});
 
-  // Safe calculation of totals
-  const calculateTotals = () => {
-    if (!Array.isArray(products) || products.length === 0) {
-      return { totalMRP: "0.00", totalDiscount: "0.00", totalPrice: "0.00" };
-    }
-
-    let totalMRP = 0;
-    let totalPrice = 0;
-
-    products.forEach((item) => {
-      const qty = item.quantity || 1;
-      const price = item.price || 0;
-      const originalPrice = item.originalPrice || price;
-
-      totalMRP += originalPrice * qty;
-      totalPrice += price * qty;
-    });
-
-    const totalDiscount = totalMRP - totalPrice;
-
-    return {
-      totalMRP: totalMRP.toFixed(2),
-      totalDiscount: totalDiscount.toFixed(2),
-      totalPrice: totalPrice.toFixed(2)
-    };
-  };
-
-  const totals = calculateTotals();
-
   // Safe trim helper
   const safeTrim = (value) => (value || "").toString().trim();
 
@@ -419,29 +390,48 @@ const AddressStep = ({
       </div>
 
       {/* Right Column: Order Summary */}
-      <div className="pt-4">
-        <h3 className="mb-4 text-[16px]">Order Summary <span className="text-[#696661] text-[14px]">(items {totalItems})</span></h3>
-        <div className="space-y-2 mb-4">
-          <div className="flex justify-between"><span className="text-[#696661] text-[14px]">Total MRP</span><span>₹{cartData?.total_mrp_amount || totals.totalMRP}</span></div>
-          <div className="flex justify-between text-green-600"><span className="text-[#696661] text-[14px]">Discount</span><span>-₹{cartData?.total_sale_discount || totals.totalDiscount}</span></div>
-          {cartData?.coupon_discount > 0 && (
-            <div className="flex justify-between text-green-600">
-              <span className="text-[#696661] text-[14px]">Coupon Discount</span>
-              <span>-₹{cartData.coupon_discount.toFixed(2)}</span>
-            </div>
-          )}
-        </div>
-        <div className="border-t pt-2 mb-6">
-          <div className="flex justify-between text-lg">
-            <span className="text-[16px]">{cartData?.coupon_discount > 0 ? "Grand Total" : "Total"}</span>
-            <span className="text-[16px] font-semibold">₹{cartData?.total_amount?.toFixed(2) || totals.totalPrice}</span>
-          </div>
-        </div>
-        <button onClick={nextStep} className="w-full bg-[#b4853e] text-white py-3 mb-4">Check Out</button>
-        <button onClick={() => navigate("/")} className="w-full text-[#b4853e] py-2 flex items-center justify-center gap-2">
-          <ArrowLeft className="w-4 h-4" /> Continue Shopping
-        </button>
-      </div>
+      
+              <div className="pt-4">
+                <h3 className="mb-4 text-[16px]">Order Summary <span className="text-[#696661] text-[14px]">(items {totalItems})</span></h3>
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between">
+                    <span>Total MRP</span>
+                    <span>₹{cartData.total_mrp_amount}</span>
+                  </div>
+      
+                  <div className="flex justify-between text-green-600">
+                    <span>Sale Discount</span>
+                    <span>-₹{cartData.total_sale_discount}</span>
+                  </div>
+      
+                  {cartData.total_offer_discount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Offer Discount</span>
+                      <span>-₹{cartData.total_offer_discount}</span>
+                    </div>
+                  )}
+      
+                  {cartData.coupon_discount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Coupon Discount</span>
+                      <span>-₹{cartData.coupon_discount}</span>
+                    </div>
+                  )}
+                </div>
+      
+                <div className="border-t pt-2">
+                  <div className="flex justify-between text-lg font-semibold">
+                    <span>Grand Total</span>
+                    <span>₹{cartData.total_amount}</span>
+                  </div>
+                </div>
+      
+      
+                <button onClick={nextStep} className="w-full bg-[#b4853e] text-white py-3 mb-4">Check Out</button>
+                <button onClick={() => navigate("/")} className="w-full text-[#b4853e] py-2 flex items-center justify-center gap-2">
+                  <ArrowLeft className="w-4 h-4" /> Continue Shopping
+                </button>
+              </div>
     </div>
   );
 };

@@ -11,41 +11,17 @@ const PaymentStep = ({ cartData, products, handleOrder, prevStep, nextStep }) =>
   const SHIPPING_FEE = 70;
   const COD_CHARGE = 55;
 
-  // Calculate totals
-  const calculateTotals = () => {
-    if (!Array.isArray(products) || products.length === 0) {
-      return { totalMRP: 0, totalDiscount: 0, subtotal: 0 };
-    }
-
-    let totalMRP = 0;
-    let totalPrice = 0;
-
-    products.forEach((item) => {
-      const qty = item.quantity || 1;
-      const originalPrice = item.originalPrice || item.price || 0;
-      const price = item.price || 0;
-
-      totalMRP += originalPrice * qty;
-      totalPrice += price * qty;
-    });
-
-    return {
-      totalMRP,
-      totalDiscount: totalMRP - totalPrice,
-      subtotal: totalPrice,
-    };
-  };
-
-  const { totalMRP, totalDiscount, subtotal } = calculateTotals();
 
   // Payment method
   const [paymentMethod, setPaymentMethod] = useState("online");
 
   // Final Total (THIS WAS MISSING)
+  const baseTotal = cartData?.total_amount || 0;
+
   const finalTotal =
     paymentMethod === "cod"
-      ? subtotal + SHIPPING_FEE + COD_CHARGE
-      : subtotal + SHIPPING_FEE;
+      ? baseTotal + SHIPPING_FEE + COD_CHARGE
+      : baseTotal + SHIPPING_FEE;
 
   const placeOrder = () => {
     const method = paymentMethod === "cod" ? "COD" : "PREPAID";
@@ -130,36 +106,49 @@ const PaymentStep = ({ cartData, products, handleOrder, prevStep, nextStep }) =>
 
           <div className="space-y-2 mb-4">
             <div className="flex justify-between">
-              <span className="text-[#696661] text-[14px]">Total MRP</span>
-              <span>₹{totalMRP}</span>
+              <span>Total MRP</span>
+              <span>₹{cartData.total_mrp_amount}</span>
             </div>
 
             <div className="flex justify-between text-green-600">
-              <span className="text-[#696661] text-[14px]">Discount</span>
-              <span>-₹{totalDiscount}</span>
+              <span>Sale Discount</span>
+              <span>-₹{cartData.total_sale_discount}</span>
             </div>
 
+            {cartData.total_offer_discount > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Offer Discount</span>
+                <span>-₹{cartData.total_offer_discount}</span>
+              </div>
+            )}
+
+            {cartData.coupon_discount > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Coupon Discount</span>
+                <span>-₹{cartData.coupon_discount}</span>
+              </div>
+            )}
+
             <div className="flex justify-between">
-              <span className="text-[#696661] text-[14px]">Shipping</span>
+              <span>Shipping</span>
               <span>₹{SHIPPING_FEE}</span>
             </div>
 
             {paymentMethod === "cod" && (
               <div className="flex justify-between">
-                <span className="text-[#696661] text-[14px]">COD Charges</span>
+                <span>COD Charges</span>
                 <span>₹{COD_CHARGE}</span>
               </div>
             )}
           </div>
 
-          <div className="border-t pt-2 mb-6">
-            <div className="flex justify-between text-lg">
-              <span className="text-[16px]">Total</span>
-              <span className="text-[16px] font-semibold">
-                ₹{finalTotal}
-              </span>
+          <div className="border-t pt-2">
+            <div className="flex justify-between text-lg font-semibold">
+              <span>Total</span>
+              <span>₹{finalTotal}</span>
             </div>
           </div>
+
 
           <button
             onClick={placeOrder}

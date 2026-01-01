@@ -19,47 +19,6 @@ const ShoppingCartStep = ({
 }) => {
   const totalItems = products.length;
 
-  const calculateTotals = () => {
-    let totalMRP = 0;
-    let totalSaleDiscount = 0;
-    let totalOfferDiscount = 0;
-    let totalPrice = 0;
-
-    products.forEach((item) => {
-      const qty = item.quantity || 1;
-      const price = item.price || 0;
-      const original = item.originalPrice || price;
-
-      const mrpTotal = original * qty;
-      const saleTotal = price * qty;
-
-      totalMRP += mrpTotal;
-      totalSaleDiscount += (mrpTotal - saleTotal);
-
-      // ✅ OFFER DISCOUNT (flat)
-      if (item.itemOfferDiscount > 0) {
-        totalOfferDiscount += item.itemOfferDiscount;
-      }
-
-      totalPrice += saleTotal;
-    });
-
-    const couponDiscount = cartData?.coupon_discount || 0;
-
-    const grandTotal =
-      totalPrice - totalOfferDiscount - couponDiscount;
-
-    return {
-      totalMRP: totalMRP.toFixed(2),
-      totalSaleDiscount: totalSaleDiscount.toFixed(2),
-      totalOfferDiscount: totalOfferDiscount.toFixed(2),
-      couponDiscount: couponDiscount.toFixed(2),
-      grandTotal: grandTotal.toFixed(2),
-    };
-  };
-
-  const totals = calculateTotals();
-
   if (status === "loading") return <div className="text-center py-10">Loading cart...</div>;
 
   if (!products.length) {
@@ -179,37 +138,37 @@ const ShoppingCartStep = ({
           <h3 className="mb-4 text-[16px]">Order Summary <span className="text-[#696661] text-[14px]">(items {totalItems})</span></h3>
           <div className="space-y-2 mb-4">
             <div className="flex justify-between">
-              <span className="text-[#696661] text-[14px]">Total MRP</span>
-              <span>₹{totals.totalMRP}</span>
+              <span>Total MRP</span>
+              <span>₹{cartData.total_mrp_amount}</span>
             </div>
 
             <div className="flex justify-between text-green-600">
-              <span className="text-[#696661] text-[14px]">Sale Discount</span>
-              <span>-₹{totals.totalSaleDiscount}</span>
+              <span>Sale Discount</span>
+              <span>-₹{cartData.total_sale_discount}</span>
             </div>
 
-            {Number(totals.totalOfferDiscount) > 0 && (
+            {cartData.total_offer_discount > 0 && (
               <div className="flex justify-between text-green-600">
-                <span className="text-[#696661] text-[14px]">Offer Discount</span>
-                <span>-₹{totals.totalOfferDiscount}</span>
+                <span>Offer Discount</span>
+                <span>-₹{cartData.total_offer_discount}</span>
               </div>
             )}
 
-            {cartData?.coupon_discount > 0 && (
+            {cartData.coupon_discount > 0 && (
               <div className="flex justify-between text-green-600">
-                <span className="text-[#696661] text-[14px]">Coupon Discount</span>
-                <span>-₹{totals.couponDiscount}</span>
+                <span>Coupon Discount</span>
+                <span>-₹{cartData.coupon_discount}</span>
               </div>
             )}
           </div>
-          <div className="border-t pt-2 mb-6">
-            <div className="flex justify-between text-lg">
-              <span className="text-[16px] font-semibold">Grand Total</span>
-              <span className="text-[16px] font-semibold">
-                ₹{totals.grandTotal}
-              </span>
+
+          <div className="border-t pt-2">
+            <div className="flex justify-between text-lg font-semibold">
+              <span>Grand Total</span>
+              <span>₹{cartData.total_amount}</span>
             </div>
           </div>
+
 
           <button onClick={nextStep} className="w-full bg-[#b4853e] text-white py-3 mb-4">Check Out</button>
           <button onClick={() => navigate("/")} className="w-full text-[#b4853e] py-2 flex items-center justify-center gap-2">
