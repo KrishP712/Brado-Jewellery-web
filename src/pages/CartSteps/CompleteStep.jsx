@@ -14,7 +14,7 @@ const CompleteStep = ({ order, cartData, formData }) => {
   const navigate = useNavigate();
   const shippingCharge = 70;
   const codCharge = 55;
-  const finalAmount = (parseFloat(cartData?.total_amount || 0) + shippingCharge + codCharge).toFixed(2);
+  const finalAmount = (parseFloat(cartData?.total_amount) + shippingCharge + codCharge).toFixed(2);
 
   return (
     <div className="max-w-3xl mx-auto text-center w-[80%]">
