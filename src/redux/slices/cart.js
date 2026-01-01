@@ -51,20 +51,20 @@ export const increaseCartQuantity = createAsyncThunk(
     "cart/increaseQuantity",
     async (productId, { rejectWithValue }) => {
         try {
-            await axiosInstance.put(`/cart/increase`, { productId });
-            return { productId };
+            const response = await axiosInstance.put(`/cart/increase`, { productId });
+            return response.data;
         } catch (error) {
             return rejectWithValue(error.response);
         }
     }
-);
+)
 
 export const decreaseCartQuantity = createAsyncThunk(
     "cart/decreaseQuantity",
     async (productId, { rejectWithValue }) => {
         try {
-            await axiosInstance.put(`/cart/decrease`, { productId });
-            return { productId };
+            const response = await axiosInstance.put(`/cart/decrease`, { productId });
+            return response.data;
         } catch (error) {
             return rejectWithValue(error.response);
         }
@@ -160,56 +160,10 @@ const cartSlice = createSlice({
             .addCase(increaseCartQuantity.pending, (state) => {
                 state.operationStatus = 'loading';
             })
-            .addCase(increaseCartQuantity.fulfilled, (state, action) => {
-                const cart = state.cart?.[0];
-                if (!cart) return;
-
-                const item = cart.products.find(
-                    (p) => String(p.productId) === String(action.payload.productId)
-                );
-                if (!item) return;
-
-                // increase quantity
-                item.quantity += 1;
-
-                // update item total
-                item.itemTotal = item.quantity * item.price;
-
-                // update cart totals
-                cart.total_amount += item.price;
-                cart.total_mrp_amount += item.originalPrice || item.price;
-                cart.total_sale_discount = cart.total_mrp_amount - cart.total_amount;
+            .addCase(increaseCartQuantity.fulfilled, (state) => {
+                state.operationStatus = 'succeeded';
             })
-
             .addCase(increaseCartQuantity.rejected, (state, action) => {
-                state.operationStatus = 'failed';
-                state.error = action.payload;
-            })
-
-            .addCase(decreaseCartQuantity.pending, (state) => {
-                state.operationStatus = 'loading';
-            })
-            .addCase(decreaseCartQuantity.fulfilled, (state, action) => {
-                const cart = state.cart?.[0];
-                if (!cart) return;
-
-                const item = cart.products.find(
-                    (p) => String(p.productId) === String(action.payload.productId)
-                );
-                if (!item || item.quantity <= 1) return;
-
-                // decrease quantity
-                item.quantity -= 1;
-
-                // update item total
-                item.itemTotal = item.quantity * item.price;
-
-                // update cart totals
-                cart.total_amount -= item.price;
-                cart.total_mrp_amount -= item.originalPrice || item.price;
-                cart.total_sale_discount = cart.total_mrp_amount - cart.total_amount;
-            })
-            .addCase(decreaseCartQuantity.rejected, (state, action) => {
                 state.operationStatus = 'failed';
                 state.error = action.payload;
             })
