@@ -12,9 +12,6 @@ const CompleteStep = ({ order, cartData, formData }) => {
     console.log(latestOrder);
   if (!latestOrder) return null;
   const navigate = useNavigate();
-  const shippingCharge = 70;
-  const codCharge = 55;
-  const finalAmount = (parseFloat(cartData?.total_amount) + shippingCharge + codCharge).toFixed(2);
 
   return (
     <div className="max-w-3xl mx-auto text-center w-[80%]">
@@ -29,7 +26,7 @@ const CompleteStep = ({ order, cartData, formData }) => {
               Order No.: <span className="text-black">{latestOrder?.orderId}</span>
             </p>
             <p className="text-[14px] text-[#696661]">
-              Order Amount: <span className="text-black">₹{finalAmount}</span>
+              Order Amount: <span className="text-black">₹{latestOrder?.totalAmount}</span>
             </p>
           </div>
 
@@ -43,7 +40,7 @@ const CompleteStep = ({ order, cartData, formData }) => {
 
             <h3 className="text-[16px] mb-2 mt-5">Payment Details</h3>
             <p className="text-[#696661] text-[14px]">Mode: <span className="text-black">COD</span></p>
-            <p className="text-[#696661] text-[14px]">Shipping: ₹{shippingCharge} | COD: ₹{codCharge}</p>
+            <p className="text-[#696661] text-[14px]">Shipping: ₹{latestOrder?.shippingCharge} | COD: ₹{latestOrder?.codCharge || 55}</p>
           </div>
         </div>
       </div>
