@@ -20,16 +20,42 @@ const ShoppingCartStep = ({
   const totalItems = products.length;
 
   const calculateTotals = () => {
-    let totalMRP = 0, totalDiscount = 0, totalPrice = 0;
+    let totalMRP = 0;
+    let totalSaleDiscount = 0;
+    let totalOfferDiscount = 0;
+    let totalPrice = 0;
+
     products.forEach((item) => {
       const qty = item.quantity || 1;
       const price = item.price || 0;
       const original = item.originalPrice || price;
-      totalMRP += original * qty;
-      totalPrice += price * qty;
+
+      const mrpTotal = original * qty;
+      const saleTotal = price * qty;
+
+      totalMRP += mrpTotal;
+      totalSaleDiscount += (mrpTotal - saleTotal);
+
+      // ✅ OFFER DISCOUNT (flat)
+      if (item.itemOfferDiscount > 0) {
+        totalOfferDiscount += item.itemOfferDiscount;
+      }
+
+      totalPrice += saleTotal;
     });
-    totalDiscount = totalMRP - totalPrice;
-    return { totalMRP: totalMRP.toFixed(2), totalDiscount: totalDiscount.toFixed(2), totalPrice: totalPrice.toFixed(2) };
+
+    const couponDiscount = cartData?.coupon_discount || 0;
+
+    const grandTotal =
+      totalPrice - totalOfferDiscount - couponDiscount;
+
+    return {
+      totalMRP: totalMRP.toFixed(2),
+      totalSaleDiscount: totalSaleDiscount.toFixed(2),
+      totalOfferDiscount: totalOfferDiscount.toFixed(2),
+      couponDiscount: couponDiscount.toFixed(2),
+      grandTotal: grandTotal.toFixed(2),
+    };
   };
 
   const totals = calculateTotals();
@@ -55,7 +81,6 @@ const ShoppingCartStep = ({
         </h2>
 
         {products.map((item) => (
-          console.log(item),
           <div key={item.productId || item._id} className="border-b border-gray-300 pb-[15px] mb-4 relative">
             <div className="absolute top-2 right-2 md:flex space-x-2 hidden">
               <div className="text-[13px] text-gray-900 cursor-pointer" onClick={() => handleAddToWishlist(item.productId)}>
@@ -153,21 +178,31 @@ const ShoppingCartStep = ({
         <div className="pt-4">
           <h3 className="mb-4 text-[16px]">Order Summary <span className="text-[#696661] text-[14px]">(items {totalItems})</span></h3>
           <div className="space-y-2 mb-4">
-            <div className="flex justify-between"><span className="text-[#696661] text-[14px]">Total MRP</span><span>₹{cartData?.total_mrp_amount || totals.totalMRP}</span></div>
-            <div className="flex justify-between text-green-600"><span className="text-[#696661] text-[14px]">Discount</span><span>-₹{cartData?.total_sale_discount || totals.totalDiscount}</span></div>
+            <div className="flex justify-between">
+              <span className="text-[#696661] text-[14px]">Total MRP</span>
+              <span>₹{totals.totalMRP}</span>
+            </div>
+
+            <div className="flex justify-between text-green-600">
+              <span className="text-[#696661] text-[14px]">Sale Discount</span>
+              <span>-₹{totals.totalSaleDiscount}</span>
+            </div>
+
+            {Number(totals.totalOfferDiscount) > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span className="text-[#696661] text-[14px]">Offer Discount</span>
+                <span>-₹{totals.totalOfferDiscount}</span>
+              </div>
+            )}
+
             {cartData?.coupon_discount > 0 && (
               <div className="flex justify-between text-green-600">
                 <span className="text-[#696661] text-[14px]">Coupon Discount</span>
-                <span>-₹{cartData.coupon_discount.toFixed(2)}</span>
+                <span>-₹{totals.couponDiscount}</span>
               </div>
             )}
           </div>
-          <div className="border-t pt-2 mb-6">
-            <div className="flex justify-between text-lg">
-              <span className="text-[16px]">{cartData?.coupon_discount > 0 ? "Grand Total" : "Total"}</span>
-              <span className="text-[16px] font-semibold">₹{cartData?.total_amount?.toFixed(2) || totals.totalPrice}</span>
-            </div>
-          </div>
+
           <button onClick={nextStep} className="w-full bg-[#b4853e] text-white py-3 mb-4">Check Out</button>
           <button onClick={() => navigate("/")} className="w-full text-[#b4853e] py-2 flex items-center justify-center gap-2">
             <ArrowLeft className="w-4 h-4" /> Continue Shopping
