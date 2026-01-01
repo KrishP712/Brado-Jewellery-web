@@ -166,14 +166,42 @@ const cartSlice = createSlice({
             .addCase(increaseCartQuantity.pending, (state) => {
                 state.operationStatus = 'loading';
             })
-            .addCase(increaseCartQuantity.fulfilled, (state) => {
+            .addCase(increaseCartQuantity.fulfilled, (state, action) => {
                 state.operationStatus = 'succeeded';
+                const updated = action.payload;
+                const item = state.cart.products.find(
+                    (p) => p.productId === updated.productId
+                );
+                if (item) {
+                    item.quantity = updated.quantity;
+                    item.itemPrice = updated.itemPrice;
+                }
             })
             .addCase(increaseCartQuantity.rejected, (state, action) => {
                 state.operationStatus = 'failed';
                 state.error = action.payload;
             })
 
+            .addCase(decreaseCartQuantity.pending, (state) => {
+                state.operationStatus = 'loading';
+            })
+            .addCase(decreaseCartQuantity.fulfilled, (state, action) => {
+                state.operationStatus = "succeeded";
+
+                const updated = action.payload;
+                const item = state.cart.products.find(
+                    (p) => p.productId === updated.productId
+                );
+
+                if (item) {
+                    item.quantity = updated.quantity;
+                    item.itemPrice = updated.itemPrice;
+                }
+            })
+            .addCase(decreaseCartQuantity.rejected, (state, action) => {
+                state.operationStatus = 'failed';
+                state.error = action.payload;
+            })
             .addCase(removeCartData.pending, (state) => {
                 state.operationStatus = 'loading';
             })
