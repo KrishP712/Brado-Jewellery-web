@@ -52,9 +52,7 @@ export const increaseCartQuantity = createAsyncThunk(
     async (productId, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.put(`/cart/increase`, { productId });
-            if (response?.success) {
-                dispatch(getCartData());
-            }
+           
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response);
@@ -67,9 +65,7 @@ export const decreaseCartQuantity = createAsyncThunk(
     async (productId, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.put(`/cart/decrease`, { productId });
-            if (response?.success) {
-                dispatch(getCartData());
-            }
+           
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response);
