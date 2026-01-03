@@ -52,9 +52,9 @@ export const increaseCartQuantity = createAsyncThunk(
     async (productId, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.put(`/cart/increase`, { productId });
-            if (response?.success) {
-                dispatch(getCartData());
-            }
+            // if (response?.success) {
+            //     dispatch(getCartData());
+            // }
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response);
@@ -67,9 +67,9 @@ export const decreaseCartQuantity = createAsyncThunk(
     async (productId, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.put(`/cart/decrease`, { productId });
-            if (response?.success) {
-                dispatch(getCartData());
-            }
+            // if (response?.success) {
+            //     dispatch(getCartData());
+            // }
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response);
@@ -120,6 +120,18 @@ export const removeCartDataWithOutToast = createAsyncThunk(
         }
     }
 );
+const recalcCartTotals = (cart) => {
+    let total = 0;
+    let mrp = 0;
+
+    cart.products.forEach(p => {
+        total += p.itemTotal;
+        mrp += p.originalPrice * p.quantity;
+    });
+
+    cart.total_amount = total;
+    cart.total_mrp_amount = mrp;
+};
 const cartSlice = createSlice({
     name: 'cart',
     initialState: {
@@ -136,6 +148,7 @@ const cartSlice = createSlice({
         resetOperationStatus: (state) => {
             state.operationStatus = 'idle';
         }
+
     },
     extraReducers: (builder) => {
         builder
@@ -165,15 +178,45 @@ const cartSlice = createSlice({
 
             .addCase(increaseCartQuantity.pending, (state) => {
                 state.operationStatus = 'loading';
+
+                const productId = action.meta.arg;
+                const product = state.cart?.products?.find(p => p.productId === productId);
+
+                if (product && product.quantity < product.stock) {
+                    product.quantity += 1;
+                    product.itemTotal = product.quantity * product.price;
+                    recalcCartTotals(state.cart);
+                }
             })
             .addCase(increaseCartQuantity.fulfilled, (state) => {
                 state.operationStatus = 'succeeded';
+
             })
             .addCase(increaseCartQuantity.rejected, (state, action) => {
                 state.operationStatus = 'failed';
                 state.error = action.payload;
             })
+            .addCase(decreaseCartQuantity.pending, (state) => {
+                state.operationStatus = 'loading';
 
+                const productId = action.meta.arg;
+                const product = state.cart?.products?.find(p => p.productId === productId);
+
+                if (product && product.quantity > 1) {
+                    product.quantity -= 1;
+                    product.itemTotal = product.quantity * product.price;
+                    recalcCartTotals(state.cart);
+                }
+            })
+            .addCase(decreaseCartQuantity.fulfilled, (state) => {
+                state.operationStatus = 'succeeded';
+
+            })
+            .addCase(decreaseCartQuantity.rejected, (state, action) => {
+                state.operationStatus = 'failed';
+                state.error = action.payload;
+            })
+            
             .addCase(removeCartData.pending, (state) => {
                 state.operationStatus = 'loading';
             })
