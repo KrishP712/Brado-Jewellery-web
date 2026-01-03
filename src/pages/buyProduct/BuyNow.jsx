@@ -1343,6 +1343,7 @@ const BuyNow = () => {
   const navigate = useNavigate();
 
   const { cart, status } = useSelector((state) => state.cart);
+  console.log(cart,"cart cart");
   const { address } = useSelector((state) => state.address.address);
   const addressData = address?.address;
   const { coupon, loading } = useSelector((state) => state.coupon);
