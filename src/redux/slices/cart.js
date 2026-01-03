@@ -52,9 +52,9 @@ export const increaseCartQuantity = createAsyncThunk(
     async (productId, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.put(`/cart/increase`, { productId });
-            // if (response?.success) {
-            //     dispatch(getCartData());
-            // }
+            if (response?.success) {
+                dispatch(getCartData());
+            }
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response);
@@ -67,9 +67,9 @@ export const decreaseCartQuantity = createAsyncThunk(
     async (productId, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.put(`/cart/decrease`, { productId });
-            // if (response?.success) {
-            //     dispatch(getCartData());
-            // }
+            if (response?.success) {
+                dispatch(getCartData());
+            }
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response);
@@ -125,8 +125,8 @@ const cartSlice = createSlice({
     initialState: {
         cart: [],
         status: 'idle',
-        operationStatus: 'idle',
         error: null,
+        operationStatus: 'idle',
     },
     reducers: {
         clearCart: (state) => {
@@ -166,26 +166,13 @@ const cartSlice = createSlice({
             .addCase(increaseCartQuantity.pending, (state) => {
                 state.operationStatus = 'loading';
             })
-            .addCase(increaseCartQuantity.fulfilled, (state, action) => {
+            .addCase(increaseCartQuantity.fulfilled, (state) => {
                 state.operationStatus = 'succeeded';
-                state.cart = action.payload.cart;
             })
             .addCase(increaseCartQuantity.rejected, (state, action) => {
                 state.operationStatus = 'failed';
                 state.error = action.payload;
             })
-            .addCase(decreaseCartQuantity.pending, (state) => {
-                state.operationStatus = 'loading';
-            })
-            .addCase(decreaseCartQuantity.fulfilled, (state, action) => {
-                state.operationStatus = 'succeeded';
-                state.cart = action.payload.cart;
-            })
-            .addCase(decreaseCartQuantity.rejected, (state, action) => {
-                state.operationStatus = 'failed';
-                state.error = action.payload;
-            })
-
 
             .addCase(removeCartData.pending, (state) => {
                 state.operationStatus = 'loading';
