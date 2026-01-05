@@ -15,7 +15,6 @@ const ShoppingCartStep = ({
   handleIncreaseQuantity,
   handleDecreaseQuantity,
   handleRemoveProduct,
-  operationStatus,
   handleAddToWishlist = () => { }
 }) => {
   const totalItems = products.length;
@@ -103,12 +102,12 @@ const ShoppingCartStep = ({
 
                 <div className="flex items-center gap-3">
                   <div className="flex border border-gray-200 p-[2px] rounded">
-                    <button onClick={() => handleDecreaseQuantity(item.productId)} disabled={item.quantity <= 1 || operationStatus === "loading"}
+                    <button onClick={() => handleDecreaseQuantity(item.productId)} disabled={item.quantity}
                       className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50">
                       <Minus className="w-4 h-4" />
                     </button>
                     <span className="mx-4 mt-1">{item.quantity}</span>
-                    <button onClick={() => handleIncreaseQuantity(item.productId)} disabled={item.quantity >= item.stock || operationStatus === "loading"}
+                    <button onClick={() => handleIncreaseQuantity(item.productId)} disabled={item.quantity >= item.stock}
                       className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50">
                       <Plus className="w-4 h-4" />
                     </button>
