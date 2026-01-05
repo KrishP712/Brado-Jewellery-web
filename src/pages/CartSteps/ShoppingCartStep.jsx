@@ -7,8 +7,6 @@ import {
 const ShoppingCartStep = ({
   cartData,
   products,
-  status,
-  dispatch,
   navigate,
   nextStep,
   setShowCouponModal,
@@ -19,7 +17,6 @@ const ShoppingCartStep = ({
 }) => {
   const totalItems = products.length;
 
-  if (status === "loading") return <div className="text-center py-10">Loading cart...</div>;
 
   if (!products.length) {
     return (
@@ -102,12 +99,12 @@ const ShoppingCartStep = ({
 
                 <div className="flex items-center gap-3">
                   <div className="flex border border-gray-200 p-[2px] rounded">
-                    <button onClick={() => handleDecreaseQuantity(item.productId)} disabled={item.quantity}
+                    <button onClick={() => handleDecreaseQuantity(item.productId)} disabled={item.quantity === 1}
                       className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50">
                       <Minus className="w-4 h-4" />
                     </button>
                     <span className="mx-4 mt-1">{item.quantity}</span>
-                    <button onClick={() => handleIncreaseQuantity(item.productId)} disabled={item.quantity >= item.stock}
+                    <button onClick={() => handleIncreaseQuantity(item.productId)} disabled={item.quantity > item.stock}
                       className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50">
                       <Plus className="w-4 h-4" />
                     </button>
