@@ -1343,7 +1343,7 @@ const BuyNow = () => {
   const navigate = useNavigate();
 
   const { cart, status } = useSelector((state) => state.cart);
-  console.log(cart,"cart cart");
+  console.log(cart, "cart cart");
   const { address } = useSelector((state) => state.address.address);
   const addressData = address?.address;
   const { coupon, loading } = useSelector((state) => state.coupon);
@@ -1441,11 +1441,17 @@ const BuyNow = () => {
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   const handleApplyCoupon = (code) => {
-    if (code.trim()) {
-      setCouponcode(code);
+    if (!code || !code.trim()) {
+      toast.error("Please enter a coupon code");
+      return;
     }
-  };
 
+    setCouponcode(code);              
+    dispatch(getCartData(code));      
+    setShowCouponModal(false);
+  };
+ 
+  
   const handleSelectCoupon = (couponId) => {
     const selected = couponData.find(c => c._id === couponId);
     if (selected) {
@@ -1549,15 +1555,15 @@ const BuyNow = () => {
     };
 
     const result = await dispatch(createOrder(orderPayload));
-    console.log(result,"result");
+    console.log(result, "result");
     const orderId = result?.payload?.order?.orderId;
     if (orderId) {
       result.payload.order.items.forEach(item => {
         const productId = String(item.productId?._id || item.productId);
-    
+
         dispatch(removeCartDataWithOutToast(productId));
       });
-    
+
       dispatch(getOrderData());
       nextStep();
     }

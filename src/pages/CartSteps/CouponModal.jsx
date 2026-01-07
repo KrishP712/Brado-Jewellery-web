@@ -51,7 +51,12 @@ const CouponModal = ({
             type="text"
             placeholder="Enter coupon code"
             value={couponcode}
-            onChange={(e) => setCouponcode(e.target.value.toUpperCase())} // Optional: force uppercase
+            onChange={(e) => setCouponcode(e.target.value.toUpperCase())} 
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleApplyCoupon(couponcode);
+              }
+            }}
             className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 uppercase"
           />
           <button
