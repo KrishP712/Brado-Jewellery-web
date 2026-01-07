@@ -55,12 +55,16 @@ const CouponModal = ({
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 handleApplyCoupon(couponcode);
+                setCouponcode('')
               }
             }}
             className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 uppercase"
           />
           <button
-            onClick={() => handleApplyCoupon(couponcode)}
+            onClick={() => {
+              handleApplyCoupon(couponcode)
+              setCouponcode('')
+            }}
             className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium"
           >
             Apply
