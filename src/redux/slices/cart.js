@@ -9,12 +9,21 @@ export const getCartData = createAsyncThunk(
     async (couponcode, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get(
-                couponcode ? `${API_URL}/all?couponcode=${couponcode}` : `${API_URL}/all`
+                couponcode
+                    ? `${API_URL}/all?couponcode=${couponcode}`
+                    : `${API_URL}/all`
             );
+
+            // 👇 IMPORTANT: coupon applied but backend says invalid
+            if (couponcode && response.data?.success === false) {
+                return rejectWithValue(response.data);
+            }
+
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data);
         }
+
     }
 );
 
@@ -64,7 +73,7 @@ export const increaseCartQuantity = createAsyncThunk(
 
 export const decreaseCartQuantity = createAsyncThunk(
     "cart/decreaseQuantity",
-    async (productId, { rejectWithValue,dispatch }) => {
+    async (productId, { rejectWithValue, dispatch }) => {
         try {
             const response = await axiosInstance.put(`/cart/decrease`, { productId });
             if (response?.success) {
