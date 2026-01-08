@@ -1,5 +1,6 @@
 import axios from 'axios';
-// import Cookies from 'js-cookie';
+import { store } from '../redux/store';
+import { logout } from '../redux/slices/auth';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -11,7 +12,6 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    // const accessToken = Cookies.get('accessToken');
     const accessToken = localStorage.getItem('usertoken');
 
     if (accessToken) {
@@ -21,6 +21,11 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("usertoken");
+      store.dispatch(logout());
+      window.location.href = "/";
+    }
     return Promise.reject(error);
   }
 );
